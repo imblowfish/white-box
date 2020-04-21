@@ -4,8 +4,17 @@ from parsing import (
 	
 )
 
+# лишний класс, стоит убрать
+
 class Analyzer:
 	def __init__(self):
 		pass
-	def parse_project(self, project_directory):
-		print(f"Start parse project {project_directory}")
+	def get_id_table(self, project_directory):
+		# генерация документации doxygen
+		
+		# разбор документации doxygen
+		return dox_w.parse("./docs/imap/xml")
+		# добавить разбор каждого файла по отдельности
+		
+		# return dox_w.parse("./docs/imap/xml")
+		

@@ -12,6 +12,7 @@ import shutil
 
 # генерация xml doxygen на основе проекта
 def generate_doc(project_path, doc_folder):
+	# !!!добавить вывод информации на случай отладки, а также проверку наличия doxygen!!!
 	print("generate doxygen documentation")
 	folder_name = ""
 	#генерация случайного имени директории проекта
@@ -32,6 +33,7 @@ def generate_doc(project_path, doc_folder):
 	return doc_folder+"/xml"
 		
 # разбор xml вывода doxygen
+# разбор ошибок, нигде не проверяется, успешно ли пропарсился проект или нет
 def parse(path_to_doc, clear_doc=False):
 	print("parse doxygen documentation")
 	# создаем таблицу файлов doxygen, настраиваем путь к документации

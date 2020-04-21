@@ -4,17 +4,18 @@ import tkinter.ttk as ttk
 from .tree import Tree
 
 # отображение директории
+# добавить выбор объекта в treeview
 class HierarchyViewer:
 	tree = None
-	scale = None
-	width = None
-	height = None
+	hierarchy = None
 	
 	def __init__(self):
 		self.tree = Tree()
 		
 	def clear_all(self):
-		pass
+		if self.hierarchy:
+			for child in self.hierarchy.get_children():
+				self.hierarchy.delete(child)
 		
 	def get_dir_name(self, dir_name):
 		dir_paths = dir_name.split('/')
@@ -51,16 +52,17 @@ class HierarchyViewer:
 
 	def view(self, parent):
 		self.clear_all()
-		self.prop = ttk.Treeview(parent)
-		self.prop.heading("#0", text="")
+		self.hierarchy = ttk.Treeview(parent)
+		self.hierarchy.heading("#0", text="")
 		self.draw_nodes(self.tree.root_elements)
-		self.prop.pack()
+		self.hierarchy.pack()
 
 	def draw_nodes(self, nodes, parent=""):
 		if not nodes:
 			return
 		for node in nodes:
-			next_parent = self.prop.insert(parent, "end", text=node.type+":"+node.name, open=True)
+			# next_parent = self.hierarchy.insert(parent, "end", text=node.type+":"+node.name, open=True)
+			next_parent = self.hierarchy.insert(parent, "end", text=node.name, open=True)
 			if not node.child_elements:
 				continue
 			self.draw_nodes(node.child_elements, next_parent)

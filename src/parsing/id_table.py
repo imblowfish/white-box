@@ -2,6 +2,8 @@
 	Модуль работы с таблицей идентификаторов
 '''
 
+from copy import deepcopy
+
 # класс записи таблицы идентификаторов
 class IDTableRecord:
 	id = None # идентификатор записи
@@ -131,6 +133,7 @@ class IDTable:
 			if record.id == id:
 				return record
 		return None
+	#!!! можно объединить в одну функцию !!!
 	#----------------------------------
 	def get_record_by_name(self, name): # по имени
 		for record in self.records:
@@ -143,6 +146,11 @@ class IDTable:
 			if record.name == name:
 				return record.id
 		return -1
+	def get_kind_by_name(self, name):
+		for record in self.records:
+			if record.name == name:
+				return record.kind
+		return ""
 	#-------------------
 	def print_all(self): # вывод таблицы идентификаторов
 		for record in self.records:
@@ -151,4 +159,14 @@ class IDTable:
 				  record.args, record.parents_id,
 				  record.members_id,
 				  record.inheritors_id)
+	def get_members_by_parent_name(self, p_name):
+		members = []
+		parent_id = self.get_id_by_name(p_name)
+		for record in self.records:
+			if not record.parents_id:
+				continue
+			for id in record.parents_id:
+				if id == parent_id:
+					members.append(deepcopy(record))
+		return members
 #---IDTable END---

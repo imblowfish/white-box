@@ -9,6 +9,7 @@ class Core:
 	main_screen = None
 	analyzer = None
 	dir_worker = None
+	
 	def __init__(self):
 		self.analyzer = Analyzer()
 		self.dir_worker = dw.DirectoryWorker()
@@ -28,15 +29,38 @@ class Core:
 		# проход по вариантам label и вызов нужной функции
 		if label == "Open Project":
 			self.open_project()
+			
+	def hierarchy_callback(self, event):
+		# получение имени объекта, по которому был клик
+		name = self.main_screen.get_hierarchy_clicked_name(event)
+		# name = 
+		type = self.id_table.get_kind_by_name(name)
+		if len(type) == 0:
+			return
+		# получение пути до файла
+		path = self.dir_worker.get_path_to(name, self.project_dir)
+		# self.main_screen.view_file_content(path)
+		members = self.id_table.get_members_by_parent_name(name)
+		
+		# сделать визуальное отображение функции в случае клика
+		self.main_screen.view_file_members(members)
+		
+		
+		# отображение зависимостей файла
+		
+		
+		# print(path_to_file)
+		# отображение членов файла
+		# self.main_screen.view_file_content(path_to_file)
+		# self.main_screen.view_file_members()
+		# парсинг содержимого файла
 		
 	def open_project(self):
+		self.id_table = None
 		# получение пути до директории проекта
 		# project_dir = self.dir_worker.relative_path_to( tk.filedialog.askdirectory() )
-		project_dir = "../examples/imap"
+		self.project_dir = "../examples/imap/"
 		# разбор проекта и получение таблицы идентификаторов
-		self.analyzer.parse_project(project_dir)
+		self.id_table = self.analyzer.get_id_table(self.project_dir)
 		# отображение иерархии проекта
-		self.main_screen.view_hierarchy( self.dir_worker.dir_hierarchy(project_dir) )
-		# отображение тестового содержимого файла
-		
-		# отображение абстракций языка в файле
+		self.main_screen.view_hierarchy( self.dir_worker.dir_hierarchy(self.project_dir), self.hierarchy_callback )
