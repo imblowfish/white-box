@@ -5,7 +5,7 @@ import codecs
 from .tokenizer import Tokenizer
 
 class FileViewerScreen:
-	def show(self, file_path, id_table, command):
+	def show(self, file_path, id_table, click_on_id_command, selection_command):
 		self.root = tk.Tk()
 		try:
 			file = codecs.open(file_path, "r", "utf_8_sig")
@@ -14,6 +14,7 @@ class FileViewerScreen:
 			return
 			
 		self.text = tk.Text(self.root, font=("Courier New", 9))
+		self.text.bind("<Button-3>", selection_command)
 		
 		self.text.tag_config("default", foreground="black")
 		self.text.tag_config("PREPROC", foreground="grey")
@@ -25,11 +26,11 @@ class FileViewerScreen:
 		self.text.tag_config("FLOAT_NUM", foreground="yellow")
 		self.text.tag_config("KEYWORD", foreground="blue")
 		self.text.tag_config("IDENTIFIER", foreground="green")
-		self.text.tag_bind("IDENTIFIER", "<Button-1>", lambda e: command(e, "IDENTIFIER"))
+		self.text.tag_bind("IDENTIFIER", "<Button-1>", lambda e: click_on_id_command(e, "IDENTIFIER"))
 		self.text.tag_config("function", foreground="red")
-		self.text.tag_bind("function", "<Button-1>", lambda e: command(e, "function"))
+		self.text.tag_bind("function", "<Button-1>", lambda e: click_on_id_command(e, "function"))
 		self.text.tag_config("class", foreground="brown")
-		self.text.tag_bind("class", "<Button-1>", lambda e: command(e, "class"))
+		self.text.tag_bind("class", "<Button-1>", lambda e: click_on_id_command(e, "class"))
 		
 		tokenizer = Tokenizer()
 		value = ""

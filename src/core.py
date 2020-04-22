@@ -7,6 +7,10 @@ from screens.main_screen import MainScreen
 from screens.project_hierarchy_screen import ProjectHierarchyScreen
 from screens.file_viewer_screen import FileViewerScreen
 from screens.members_viewer_screen import MembersViewerScreen
+from screens.id_table_info_screen import IdTableInfoScreen
+
+
+# добавить отображение информации по имени
 
 class Core:
 	project_dir = None
@@ -17,6 +21,7 @@ class Core:
 	project_hierarchy_screen = None
 	file_viewer_screen = None
 	members_viewer_screen = None
+	id_table_info_screen = None
 	
 	def __init__(self):
 		self.analyzer = Analyzer() #инициализация анализатора
@@ -24,6 +29,7 @@ class Core:
 		self.init_project_hierarchy_screen() #инициализация окна иерархии
 		self.init_file_viewer_screen()
 		self.init_members_viewer_screen()
+		self.init_id_table_info_screen()
 		
 		# для теста
 		self.project_dir = "../examples/imap"
@@ -46,6 +52,9 @@ class Core:
 	def init_members_viewer_screen(self):
 		self.members_viewer_screen = MembersViewerScreen()
 	
+	def init_id_table_info_screen(self):
+		self.id_table_info_screen = IdTableInfoScreen()
+	
 	# КОМАНДЫ
 	def open_project_command(self, event):
 		self.project_dir = dw.relative_path_to( tk.filedialog.askdirectory() )
@@ -62,28 +71,36 @@ class Core:
 		self.project_hierarchy_screen.hierarchy.bind("<Button-1>", self.project_hierarchy_screen_click)
 		
 	def project_hierarchy_screen_click(self, event):
+		print("click")
 		# определение имени объекта, по которому нажали
 		item = self.project_hierarchy_screen.hierarchy.identify('item', event.x, event.y)
 		name = self.project_hierarchy_screen.hierarchy.item(item, "text")
 		if len(name) == 0:
 			return
-		type = self.id_table.get_kind_by_name(name)
-		if not type:
+		kind = self.id_table.get_kind_by_name(name)
+		if not kind:
+			print("not kind")
 			return
 		path_to_file = dw.get_path_to(name, self.project_dir)
 		members = self.id_table.get_members_by_name(name)
 		# отображение файла и вывод информации о нем
-		# self.file_viewer_screen.show(path_to_file, self.id_table, self.file_viewer_click)
-		if len(members) > 0:
-			self.members_viewer_screen.show(members, self.members_viewer_click)
+		self.file_viewer_screen.show(path_to_file, self.id_table, self.file_viewer_click, self.selection_file_viewer)
+		# self.members_viewer_screen.show(members, self.members_viewer_click)
 			
 	def file_viewer_click(self, event, tag):
 		name = self.file_viewer_screen.get_word_under_mouse(event, tag)
+		self.id_table_info_screen.show_info(name, self.id_table)
 		# получение информации по имени из таблицы идентификаторов и вывод ее на экран
+		
+	def selection_file_viewer(self, event):
+		print(self.file_viewer_screen.text.selection_get())
 	
 	def members_viewer_click(self, event):
+		print("click")
 		item = self.members_viewer_screen.members.identify('item', event.x, event.y)
 		name = self.members_viewer_screen.members.item(item, "text")
+		print(name)
+		self.id_table_info_screen.show_info(name, self.id_table)
 		# получение информации по имени из таблицы идентификаторов и вывод ее на экран
 		
 	# def menu_callback(self, menu):
@@ -92,27 +109,3 @@ class Core:
 		# if label == "Open Project":
 			# self.open_project()
 			
-	# def hierarchy_callback(self, event):
-		# получение имени объекта, по которому был клик
-		# name = self.main_screen.get_hierarchy_clicked_name(event)
-		# name = 
-		# type = self.id_table.get_kind_by_name(name)
-		# if len(type) == 0:
-			# return
-		# получение пути до файла
-		# path = self.dir_worker.get_path_to(name, self.project_dir)
-		# self.main_screen.view_file_content(path)
-		# members = self.id_table.get_members_by_parent_name(name)
-		
-		# сделать визуальное отображение функции в случае клика
-		# self.main_screen.view_file_members(members)
-		
-		
-		# отображение зависимостей файла
-		
-		
-		# print(path_to_file)
-		# отображение членов файла
-		# self.main_screen.view_file_content(path_to_file)
-		# self.main_screen.view_file_members()
-		# парсинг содержимого файла

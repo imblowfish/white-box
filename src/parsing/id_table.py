@@ -126,18 +126,22 @@ class IDTable:
 			child_record.add_parent(parent_record.id)
 			parent_record.add_member(child_record.id)
 	#------------------------------
-	def get_record_by_id(self, id): # получение записи по идентификатору
+	def get_record_by_id(self, id, copy=False): # получение записи по идентификатору
 		if id < 0:
 			return None
 		for record in self.records:
 			if record.id == id:
+				if copy:
+					return deepcopy(record)
 				return record
 		return None
 	#!!! можно объединить в одну функцию !!!
 	#----------------------------------
-	def get_record_by_name(self, name): # по имени
+	def get_record_by_name(self, name, copy=False): # по имени
 		for record in self.records:
 			if record.name == name:
+				if copy:
+					return deepcopy(record)
 				return record
 		return None
 	#------------------------------
