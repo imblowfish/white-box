@@ -1,7 +1,5 @@
 from parsing import (
-	doxygen_worker_main as dox_w,
-	source_worker_main as s_w,
-	
+	doxygen_worker_main as dox_w
 )
 
 # лишний класс, стоит убрать
@@ -14,7 +12,4 @@ class Analyzer:
 		
 		# разбор документации doxygen
 		return dox_w.parse("./docs/imap/xml")
-		# добавить разбор каждого файла по отдельности
-		
-		# return dox_w.parse("./docs/imap/xml")
 		

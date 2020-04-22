@@ -150,7 +150,7 @@ class IDTable:
 		for record in self.records:
 			if record.name == name:
 				return record.kind
-		return ""
+		return None
 	#-------------------
 	def print_all(self): # вывод таблицы идентификаторов
 		for record in self.records:
@@ -159,7 +159,7 @@ class IDTable:
 				  record.args, record.parents_id,
 				  record.members_id,
 				  record.inheritors_id)
-	def get_members_by_parent_name(self, p_name):
+	def get_members_by_name(self, p_name):
 		members = []
 		parent_id = self.get_id_by_name(p_name)
 		for record in self.records:
