@@ -173,4 +173,6 @@ class IDTable:
 				if id == parent_id:
 					members.append(deepcopy(record))
 		return members
+	def get_records(self):
+		return deepcopy(self.records)
 #---IDTable END---
