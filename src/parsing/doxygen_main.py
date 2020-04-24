@@ -1,6 +1,6 @@
 from .doxygen_table import DoxyTable
 from .id_table import IDTable
-from .doxygen_parsers import (
+from .doxygen_parser import (
 	IndexParser,
 	SourceFileParser,
 	ClassParser
@@ -30,7 +30,7 @@ def generate_doc(project_path, doc_folder):
 				| "+"doxygen"+" - "
 	subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	print("doxygen documentation generating success")
-	return doc_folder+"/xml"
+	return doc_folder+"\\xml"
 		
 # разбор xml вывода doxygen
 # разбор ошибок, нигде не проверяется, успешно ли пропарсился проект или нет
@@ -42,7 +42,7 @@ def parse(path_to_doc, clear_doc=False):
 	id_table = IDTable()
 	# разбираем файл index.xml
 	index_parser = IndexParser(doxy_table, id_table)
-	index_parser.parse(path_to_doc+"/index.xml")
+	index_parser.parse(path_to_doc+"\index.xml")
 	# разбираем файлы с исходным кодом
 	source_parser = SourceFileParser(doxy_table, id_table)
 	source_parser.parse()

@@ -6,18 +6,18 @@ def check_path(path):
 # получение списка файлов и поддиректорий в директории
 def list_in_dir(dir_path):
 	return os.listdir(dir_path)
-def get_path_to(name, dir):
-	tree = dir_hierarchy(dir)
+def get_path_from(project_dir, name):
+	tree = get_dir_tree(project_dir)
 	for item in tree:
-		for dir in item[1]:
-			if dir == name:
-				return item[0]+'/'+name
+		for project_dir in item[1]:
+			if project_dir == name:
+				return item[0]+'\\'+name
 		for file in item[2]:
 			if file == name:
-				return item[0]+'/'+name
+				return item[0]+'\\'+name
 	return ""
 # иерархия директории
-def dir_hierarchy(dir_path):
+def get_dir_tree(dir_path):
 	tree = os.walk(dir_path)
 	return tree
 def relative_path_to(dir_path):
