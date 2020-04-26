@@ -27,8 +27,6 @@ class WhiteBoxCommands:
 		tree = dir_par.get_dir_tree(self.project_directory)
 		# отображаем
 		self.main_win.hierarchy_frame.show(tree)
-		# отображение графа зависимости файлов проекта
-		
 	#--------------------------------
 	def hierarchy_click(self, event): # обработка клика по иерархии
 		# получаем ссылку на виджет treeview фрейма отображения иерархии
@@ -40,21 +38,41 @@ class WhiteBoxCommands:
 		if not len(name):
 			return
 		# узнаем вид элемента
-		kind = self.id_table.get_kind_by_name(name)
-		if kind != "file":
+		record = self.id_table.get_record_by_name(name, copy=True)
+		if not record or record.kind != "file":
 			return
 		# узнаем полный путь до него от корневой директории проекта
 		path = dir_par.get_path_from(self.project_directory, name)
 		# отображение содержимого файла
 		ff = self.main_win.files_frame
 		ff.open_file(name, path, self.file_content_click)
-		# отображение графа зависимостей файла
-		
-		# отображение членов файла
-		
+		# отображение информации о файле
+		fif = self.main_win.file_info_frame
+		fif.show(record, self.id_table)
 	#-------------------------------------------
 	def file_content_click(self, event, text_tag): # обработка клика по тексту файла
-		print(f"Content click {text_tag}")
+		print(f"file content click {text_tag}")
+		# отображение окна с информацией об идентификаторе
+		
+	#--------------------------------
+	def file_info_click(self, event):
+		print("file info click")
+		# отображение окна с информацией об идентификаторе
+		item = self.main_win.file_info_frame.get_item_info(event.x, event.y)
+		if not item:
+			return
+		if item[1] == "file":
+			# отображаем совсем другое окно
+			return
+		record = self.id_table.get_record_by_name_and_kind(item[0], item[1], copy=True)
+		self.main_win.show_id_info(record, self.id_table)
+		# item = tree.identify("item", event.x, event.y)
+		# name = tree.item(item, "text")
+		# kind = self.main_win.file_info_frame.get_kind( tree.item(tree.parent(item), "text") )
+		# record = self.id_table.get_record_by_name_and_kind(name, kind, copy=True)
+		# print(record.name, record.kind)
+		# self.main_win.show_id_info(None, None)
+		
 #---WhiteBoxCommands---
 		
 		

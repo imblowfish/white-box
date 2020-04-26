@@ -39,5 +39,7 @@ class WhiteBoxCore(WhiteBoxCommands):
 	def bind_commands(self): # связывание окон и фреймов с командами
 		tree = self.main_win.hierarchy_frame.tree_widget
 		tree.bind("<Double-Button-1>", self.hierarchy_click)
+		tree = self.main_win.file_info_frame.info_tree
+		tree.bind("<Double-Button-1>", self.file_info_click)
 #---WhiteBoxCore---
 	

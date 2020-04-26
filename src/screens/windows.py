@@ -2,8 +2,9 @@ import tkinter as tk
 
 from .frames import (
 	HierarchyFrame,
-	OpenFilesFrame,
-	FileInfoFrame
+	FilesFrame,
+	FileInfoFrame,
+	IDInfoFrame
 )
 
 # класс главного окна
@@ -28,10 +29,18 @@ class MainWindow:
 		# создаем фрейм иерархии проекта
 		self.hierarchy_frame = HierarchyFrame(self.master, width=0.2)
 		# содежимого файлов
-		self.files_frame = OpenFilesFrame(self.master, x=0.2, width=0.6)
+		self.files_frame = FilesFrame(self.master, x=0.2, width=0.6)
 		# информации о файле
 		self.file_info_frame = FileInfoFrame(self.master, x=0.8, width=0.2)
 	#---------------
 	def start(self): # начало работы окна
 		self.master.mainloop()
+	#----------------------
+	def show_id_info(self, record, id_table):
+		print("Show id info")
+		win = tk.Toplevel()
+		win.geometry("500x500")
+		id_info_frame = IDInfoFrame(win)
+		id_info_frame.show(record, id_table)
+		
 #---MainWindow---

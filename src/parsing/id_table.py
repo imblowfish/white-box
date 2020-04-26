@@ -80,16 +80,10 @@ class IDTable:
 		self.now_id = None # удаляем текущий id
 	#---------------------------------------------------------------------
 	def add_record(self, name, kind, type=None, args=None, modifier=None): # добавление записи в таблицу
-		# проверяем, есть ли уже такая запись в таблице
-		# for record in self.records:
-			# если есть совпадение по имени и виду, не добавлем
-			# if record.name == name and record.kind == kind: 
-				# return
-		# иначе добавляем
 		self.records.append( IDTableRecord(self.now_id, name, kind, type, args, modifier) )
 		self.now_id += 1
 	#---------------------------------------------------------
-	def add_parent(self, record_id, parent_name, parent_type): # добавление родителя записи
+	def add_parent(self, record_id, parent_name, parent_kind): # добавление родителя записи
 		# ищем запись, в которой добавляем родителя
 		record = self.get_record_by_id(record_id) 
 		# ищем запись, которая будет родительской
@@ -97,7 +91,7 @@ class IDTable:
 		# если родительская отсутствует
 		if not parent_record: 
 			# добавляем ее
-			self.add_record(parent_name, parent_type)
+			self.add_record(parent_name, parent_kind)
 			parent_record = self.get_record_by_name(parent_name)
 		if record:
 			# добавляем родителя записи
@@ -140,6 +134,13 @@ class IDTable:
 	def get_record_by_name(self, name, copy=False): # по имени
 		for record in self.records:
 			if record.name == name:
+				if copy:
+					return deepcopy(record)
+				return record
+		return None
+	def get_record_by_name_and_kind(self, name, kind, copy=False):
+		for record in self.records:
+			if record.name == name and record.kind == kind:
 				if copy:
 					return deepcopy(record)
 				return record
