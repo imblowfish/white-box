@@ -10,6 +10,7 @@ from screens.windows import (
 from whitebox_core_commands import WhiteBoxCommands
 
 # отображение всех упоминаний в коде
+# модули по тематике
 # добавить везде скроллбары
 
 # Класс корня проекта

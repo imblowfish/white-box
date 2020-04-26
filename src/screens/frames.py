@@ -254,15 +254,51 @@ class IDInfoFrame(tk.Frame):
 			self.canvas.show_member(member)
 
 # ВСЕ,ЧТО ОТНОСИТСЯ К ФРЕЙМУ ОТОБРАЖЕНИЯ ЗАВИСИМОСТЕЙ ОБЪЕКТА
-
-class DependencyGraph(tk.Canvas):
-	edges = None
+# добавить связи
+class DependencyTree(tk.Canvas):
+	levels = None
 	def __init__(self, master, **kwargs):
 		tk.Canvas.__init__(self, master, **kwargs)
 		self.addtag_all("all")
 		self.pack()
-		self.edges = []
-
+		self.levels = []
+	def clear(self):
+		self.levels = []
+	def add_root(self, record):
+		self.levels.append([(record.kind, record.name)])
+	def add_next_level(self, records):
+		level = []
+		for record in records:
+			level.append((record.kind, record.name))
+		self.levels.append(level)
+	def show(self):
+		depth = len(self.levels)
+		step_y = float(self["height"])/depth
+		for i in range(depth):
+			num_on_layer = len(self.levels[i])
+			step_x = float(self["width"]) / (num_on_layer+1)
+			for j in range(len(self.levels[i])):
+				if i+1 >= depth:
+					self.show_node(self.levels[i][j], i, j+1, step_x, step_y, root=True)
+				else:
+					self.show_node(self.levels[i][j], i, j+1, step_x, step_y)
+					
+	def show_node(self, node, level, num, step_x, step_y, root=False):
+		x1 = num * step_x
+		y1 = level * step_y + 20
+		x2 = x1 + float(self["width"])/10
+		y2 = y1 + float(self["height"])/10
+		if root:
+			self.draw_kind(node[0], x1, y1, x2, y2, "red")
+		else:
+			self.draw_kind(node[0], x1, y1, x2, y2)
+		self.create_text(x1, y1, text=node[1])
+	def draw_kind(self, kind, x1, y1, x2, y2, color="black"):
+		if kind == "file":
+			self.create_rectangle(x1, y1, x2, y2, outline=color)
+		elif kind == "class":
+			self.create_oval(x1, y1, x2, y2, outline=color)
+		
 class DependencyFrame(tk.Frame):
 	def __init__(self, master, x=0, y=0, width=1, height=1):
 		tk.Frame.__init__(self, master)
@@ -270,14 +306,34 @@ class DependencyFrame(tk.Frame):
 		self.init_widgets()
 		self.bind("<Configure>", self.resize)
 	def init_widgets(self):
-		self.graph = DependencyGraph(self, bg="white")
+		self.dep_tree = DependencyTree(self, bg="white")
 	def resize(self, event):
-		wscale = float(event.width)/float(self.graph["width"])
-		hscale = float(event.height)/float(self.graph["height"])
-		self.graph.configure(width=event.width, height=event.height)
-		self.graph.scale("all", 0, 0, wscale, hscale)
+		wscale = float(event.width)/float(self.dep_tree["width"])
+		hscale = float(event.height)/float(self.dep_tree["height"])
+		self.dep_tree.configure(width=event.width, height=event.height)
+		self.dep_tree.scale("all", 0, 0, wscale, hscale)
 	def show(self, record, id_table):
 		print("Show dependency")
-
-	
+		self.dep_tree.clear()
+		self.show_parents(record.parents_id, id_table)
+		self.dep_tree.add_root(record)
+		self.dep_tree.show()
+	def show_parents(self, parents_id, id_table):
+		if not parents_id:
+			return None
+		parents = []
+		for id in parents_id:
+			parent = id_table.get_record_by_id(id, copy=True)
+			if parent:
+				parents.append(parent)
+			self.show_parents(parent.parents_id, id_table)
+		self.dep_tree.add_next_level(parents)
+		
+class MentionsFrame(tk.Frame):
+	def __init__(self, master, x=0, y=0, width=1, height=1):
+		tk.Frame.__init__(self, master)
+		self.place(relx=x, rely=y, relwidth=width, relheight=height)
+		self.init_widgets()
+	def init_widgets(self):
+		pass
 		

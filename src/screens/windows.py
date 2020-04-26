@@ -45,10 +45,17 @@ class MainWindow:
 		# id_info_frame = IDInfoFrame(win)
 		# id_info_frame.show(record, id_table)
 		
+		# win = tk.Toplevel()
+		# win.geometry("500x500")
+		# win.title("Dependencies")
+		# dep_frame = DependencyFrame(win)
+		# dep_frame.show(record, id_table)
+		
 		win = tk.Toplevel()
 		win.geometry("500x500")
 		win.title("Dependencies")
-		dep_frame = DependencyFrame(win)
-		dep_frame.show(record, id_table)
+		mentions = MentionsFrame(win)
+		# отправляю запись и файлы проекта
+		# mentions.show(record)
 		
 #---MainWindow---
