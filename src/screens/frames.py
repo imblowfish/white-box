@@ -193,36 +193,91 @@ class FileInfoFrame(tk.Frame):
 
 # ВСЕ, ЧТО ОТНОСИТСЯ К ФРЕЙМУ ОТОБРАЖЕНИЯ ИНФОРМАЦИИ ОБ ИДЕНТИФИКАТОРЕ
 # отображать граф зависимостей и treeview информации о классе
+
+from math import fabs
+
+class InfoCanvas(tk.Canvas):
+	padding = 5
+	up_limit = None
+	down_limit = None
+	def __init__(self, master, **kwargs):
+		tk.Canvas.__init__(self, master, **kwargs)
+		self.up_limit = 0
+		self.down_limit = 0
+		self.addtag_all("all")
+		self.bind("<MouseWheel>", self.scroll)
+		self.pack()
+		# self.tag_bind("all", "<Enter>", self.on_enter)
+	# def on_enter(self, event):
+		# item = event.widget.find_closest(event.x, event.y)
+		# self.itemconfig(item, fill="yellow")
+	def scroll(self, event):
+		bbox = self.bbox("all")
+		if event.delta < 0 and bbox[3] + event.delta < self.down_limit:
+			return
+		elif event.delta > 0 and bbox[1] + event.delta > self.up_limit:
+			return
+		self.move("all", 0, event.delta)
+	def draw_header(self, record):
+		width = int(self["width"])
+		height = int(self["height"])
+		name = self.create_text(width/2, height/20, text=record.kind+' '+record.name, )
+		self.create_rectangle(self.padding, self.padding, width - self.padding, height/10)
+		self.up_limit = int(self["height"])/10
+		self.down_limit = int(self["height"]) - int(self["height"])/10
+	def show_member(self, member):
+		bbox = self.bbox("all")
+		text = self.create_text(self.padding + bbox[0], bbox[3], text=str(member), anchor="nw")
+		bbox = self.bbox(text)
+		if bbox[0] < 0:
+			self.move(text, fabs(bbox[0]), 0)
+		
 class IDInfoFrame(tk.Frame):
-	# сделать изменение размера canvas и перерисовку в зависимости от изменений
-	
 	def __init__(self, master, x=0, y=0, width=1, height=1):
 		tk.Frame.__init__(self, master)
-		self.init_widgets()
 		self.place(relx=x, rely=y, relwidth=width, relheight=height)
+		self.init_widgets()
+		self.bind("<Configure>", self.resize)
 	def init_widgets(self):
-		self.text = tk.Text(self)
-		self.text.place(relx=0, rely=0, relwidth=1, relheight=1)
-		
+		self.canvas = InfoCanvas(self, bg="white")
+	def resize(self, event):
+		wscale = float(event.width)/float(self.canvas["width"])
+		hscale = float(event.height)/float(self.canvas["height"])
+		self.canvas.configure(width=event.width, height=event.height)
+		self.canvas.scale("all", 0, 0, wscale, hscale)
 	def show(self, record, id_table):
-		self.text.insert(tk.END, record.kind+' '+record.name+'\n')
-		self.show_members(record.members_id, id_table)
-		
-	def show_members(self, members_id, id_table):
-		if not members_id:
+		self.canvas.draw_header(record)
+		if not record.members_id:
 			return
-		self.text.insert(tk.END, "MEMBERS:\n")
-		for id in members_id:
-			member = id_table.get_record_by_id(id)
-			# if member.kind == "function" or member.kind == "variable":
-				# self.text.insert(tk.END, member.kind+' '+
-										 # member.modifier+' '+
-										 # member.type+' '+
-										 # member.name+' '+
-										 # member.args+'\n')
-			# else:
-			self.text.insert(tk.END, member.kind+' '+member.name+'\n')
-		
+		for id in record.members_id:
+			member = id_table.get_record_by_id(id, copy=True)
+			self.canvas.show_member(member)
+
+# ВСЕ,ЧТО ОТНОСИТСЯ К ФРЕЙМУ ОТОБРАЖЕНИЯ ЗАВИСИМОСТЕЙ ОБЪЕКТА
+
+class DependencyGraph(tk.Canvas):
+	edges = None
+	def __init__(self, master, **kwargs):
+		tk.Canvas.__init__(self, master, **kwargs)
+		self.addtag_all("all")
+		self.pack()
+		self.edges = []
+
+class DependencyFrame(tk.Frame):
+	def __init__(self, master, x=0, y=0, width=1, height=1):
+		tk.Frame.__init__(self, master)
+		self.place(relx=x, rely=y, relwidth=width, relheight=height)
+		self.init_widgets()
+		self.bind("<Configure>", self.resize)
+	def init_widgets(self):
+		self.graph = DependencyGraph(self, bg="white")
+	def resize(self, event):
+		wscale = float(event.width)/float(self.graph["width"])
+		hscale = float(event.height)/float(self.graph["height"])
+		self.graph.configure(width=event.width, height=event.height)
+		self.graph.scale("all", 0, 0, wscale, hscale)
+	def show(self, record, id_table):
+		print("Show dependency")
 
 	
 		

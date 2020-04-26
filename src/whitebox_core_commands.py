@@ -52,7 +52,7 @@ class WhiteBoxCommands:
 	#-------------------------------------------
 	def file_content_click(self, event, text_tag): # обработка клика по тексту файла
 		print(f"file content click {text_tag}")
-		# отображение окна с информацией об идентификаторе
+		# открываем окно аналогично file_info_click
 		
 	#--------------------------------
 	def file_info_click(self, event):
@@ -62,16 +62,10 @@ class WhiteBoxCommands:
 		if not item:
 			return
 		if item[1] == "file":
-			# отображаем совсем другое окно
+			# делаем open_file
 			return
 		record = self.id_table.get_record_by_name_and_kind(item[0], item[1], copy=True)
 		self.main_win.show_id_info(record, self.id_table)
-		# item = tree.identify("item", event.x, event.y)
-		# name = tree.item(item, "text")
-		# kind = self.main_win.file_info_frame.get_kind( tree.item(tree.parent(item), "text") )
-		# record = self.id_table.get_record_by_name_and_kind(name, kind, copy=True)
-		# print(record.name, record.kind)
-		# self.main_win.show_id_info(None, None)
 		
 #---WhiteBoxCommands---
 		

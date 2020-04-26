@@ -9,6 +9,9 @@ from screens.windows import (
 )
 from whitebox_core_commands import WhiteBoxCommands
 
+# отображение всех упоминаний в коде
+# добавить везде скроллбары
+
 # Класс корня проекта
 class WhiteBoxCore(WhiteBoxCommands):
 	project_directory = None # рабочая директория текущего проекта

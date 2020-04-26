@@ -4,18 +4,20 @@
 
 import xml.etree.ElementTree as et
 
+# проверить связь родителей с потомками
+
 # базовый класс для парсеров вывода xml doxygen
 class BaseXMLParser:
 	doxy_table = None #ссылка на таблицу файлов doxygen
 	id_table = None #ссылка на таблицу идентификаторов
 	
-	#--------------------------------
+	#--------------------------------------------
 	def __init__(self, doxy_table, id_table_ref):
 		
 		#создаем ссылки на таблицы
 		self.doxy_table = doxy_table
 		self.id_table = id_table_ref
-	#--------------------
+	#-----------------
 	def __del__(self):
 		#удаляем все ссылки на таблицы
 		self.doxy_table = None 
@@ -51,7 +53,7 @@ class BaseXMLParser:
 		pass
 #---BaseXMLParser END---
 
-# парсер файла index.xml вывода doxygen	
+# парсер файла index.xml вывода doxygen
 class IndexParser(BaseXMLParser):
 	#------------------------------
 	def parse_xml_node(self, node): # перегруженная функция разбора узла
@@ -74,8 +76,8 @@ class IndexParser(BaseXMLParser):
 			# добавляем запись о файле в таблицу файлов doxygen
 			self.doxy_table.add_record(name, kind, doxy_ref)
 			# добавляем запись в таблицу идентификаторов
-			self.id_table.add_record(name, kind)		
-#---IndexParser END---		
+			self.id_table.add_record(name, kind)
+#---IndexParser END---
 
 # парсер файлов xml связанных с исходными файлами проекта
 class SourceFileParser(BaseXMLParser):
@@ -117,6 +119,8 @@ class SourceFileParser(BaseXMLParser):
 			kind = node.attrib["kind"]
 			type = node[0].find("type")
 			# не у каждого элемента есть тип
+			if len(type) != 0:
+				type = type[0]
 			if type is not None:
 				type = type.text
 			# если не функция, то информации об имени и виде нам хватит
@@ -193,6 +197,8 @@ class ClassParser(BaseXMLParser):
 				# дальше все аналогично SourceFileParser
 				name = child.find("name").text
 				type = child.find("type")
+				if len(type) != 0:
+					type = type[0]
 				if type is not None:
 					type = type.text
 				if kind != "function":

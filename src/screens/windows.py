@@ -4,7 +4,8 @@ from .frames import (
 	HierarchyFrame,
 	FilesFrame,
 	FileInfoFrame,
-	IDInfoFrame
+	IDInfoFrame,
+	DependencyFrame
 )
 
 # класс главного окна
@@ -37,10 +38,17 @@ class MainWindow:
 		self.master.mainloop()
 	#----------------------
 	def show_id_info(self, record, id_table):
-		print("Show id info")
+		# print("Show id info")
+		# win = tk.Toplevel()
+		# win.geometry("500x500")
+		# win.title("ID info")
+		# id_info_frame = IDInfoFrame(win)
+		# id_info_frame.show(record, id_table)
+		
 		win = tk.Toplevel()
 		win.geometry("500x500")
-		id_info_frame = IDInfoFrame(win)
-		id_info_frame.show(record, id_table)
+		win.title("Dependencies")
+		dep_frame = DependencyFrame(win)
+		dep_frame.show(record, id_table)
 		
 #---MainWindow---
