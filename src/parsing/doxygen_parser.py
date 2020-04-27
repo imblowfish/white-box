@@ -4,25 +4,21 @@
 
 import xml.etree.ElementTree as et
 
-# проверить связь родителей с потомками
-
 # базовый класс для парсеров вывода xml doxygen
 class BaseXMLParser:
 	doxy_table = None #ссылка на таблицу файлов doxygen
 	id_table = None #ссылка на таблицу идентификаторов
 	
-	#--------------------------------------------
 	def __init__(self, doxy_table, id_table_ref):
-		
 		#создаем ссылки на таблицы
 		self.doxy_table = doxy_table
 		self.id_table = id_table_ref
-	#-----------------
+
 	def __del__(self):
 		#удаляем все ссылки на таблицы
 		self.doxy_table = None 
 		self.id_table = None
-	#--------------------------
+
 	def parse(self, file_path): # разбор xml-файла
 		#получаем структуру xml файла
 		try:
@@ -35,7 +31,7 @@ class BaseXMLParser:
 		#начинаем разбор с корня
 		self.parse_xml_node(self.root)
 		# print(f"BaseXMLParser: {file_path} success parsing")
-	#-------------------------------------
+
 	def node_has_attrib(self, node, tags): # проверка, содержит ли узел xml атрибут
 		# если параметр список атрибутов
 		if type(tags) is list:
@@ -48,14 +44,13 @@ class BaseXMLParser:
 			if tags not in node.attrib.keys():
 				return False
 		return True
-	#------------------------------
+
 	def parse_xml_node(self, node): # виртуальная функций разбора узла, перегружается в наследниках
 		pass
-#---BaseXMLParser END---
 
 # парсер файла index.xml вывода doxygen
 class IndexParser(BaseXMLParser):
-	#------------------------------
+
 	def parse_xml_node(self, node): # перегруженная функция разбора узла
 		# просматриваем каждый дочерний элемент узла
 		for child in node:
@@ -77,13 +72,11 @@ class IndexParser(BaseXMLParser):
 			self.doxy_table.add_record(name, kind, doxy_ref)
 			# добавляем запись в таблицу идентификаторов
 			self.id_table.add_record(name, kind)
-#---IndexParser END---
 
 # парсер файлов xml связанных с исходными файлами проекта
 class SourceFileParser(BaseXMLParser):
 	now_file = None # текущий разбираемый файл
-	
-	#---------------
+
 	def parse(self): # перегруженная функция разбора
 		# получаем список файлов из таблицы doxygen
 		files = self.doxy_table.get_records_by_kind("file")
@@ -92,7 +85,7 @@ class SourceFileParser(BaseXMLParser):
 			super().parse(self.now_file.ref)
 		# удаляем ссылку на файл
 		self.now_file = None
-	#------------------------------
+
 	def parse_xml_node(self, node):
 		# получаем список включаемых файлов текущего файла
 		includes = node[0].findall("includes")
@@ -111,7 +104,7 @@ class SourceFileParser(BaseXMLParser):
 			self.id_table.add_member(file_id, inner_class.text, "class")
 		# разбираем остальных членов файла
 		self.parse_members(file_id, members)
-	#---------------------------------
+
 	def parse_members(self, parent_id, nodes): # разбор членов файла
 		for node in nodes:
 			# получаем имя и вид
@@ -148,20 +141,18 @@ class SourceFileParser(BaseXMLParser):
 					value = enum_value.find("name").text
 					# и добавляем
 					self.id_table.add_member(enum_id, value, "enum_value")
-#---SourceFileParser END---
 
 # парсер xml файлов классов проекта
 class ClassParser(BaseXMLParser):
 	now_class = None # текущий разбираемый файл класса
 	
-	#---------------
 	def parse(self):
 		# аналогично разбору файлов разбираем каждый файл класса
 		classes = self.doxy_table.get_records_by_kind("class")
 		for self.now_class in classes:
 			super().parse(self.now_class.ref)
 		self.now_class = None
-	#------------------------------
+
 	def parse_xml_node(self, node):
 		# получаем список классов класса
 		inner_classes = node[0].findall("innerclass")
@@ -179,7 +170,7 @@ class ClassParser(BaseXMLParser):
 			self.id_table.add_base(class_id, base_class.text, "class")
 		# разбор членов класса
 		self.parse_members(class_id, members)
-	#-----------------------------------------
+
 	def parse_members(self, parent_id, nodes): # разбор членов класса
 		# проходим по каждому узлу
 		for node in nodes:
@@ -214,4 +205,3 @@ class ClassParser(BaseXMLParser):
 					for enum_value in enum_values:
 						value = enum_value.find("name").text
 						self.id_table.add_member(enum_id, value, "enum_value")
-#---ClassParser END---

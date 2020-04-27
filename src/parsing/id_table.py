@@ -17,7 +17,6 @@ class IDTableRecord:
 	bases_id = None # идентификаторы базовых классов(для классов)
 	inheritors_id = None # массив наследников класса
 	
-	#-----------------------------------------------------------------------
 	def __init__(self, id, name, kind, type=None, args=None, modifier=None): # конструктор записи 
 		self.id = id
 		self.name = name
@@ -25,7 +24,7 @@ class IDTableRecord:
 		self.type = type
 		self.args = args
 		self.modifier = modifier
-	#-------------------------------
+
 	def add_parent(self, parent_id): # добавление родителя к записи
 		# если еще не был создан массив родительских идентификаторов
 		if not self.parents_id:
@@ -36,7 +35,7 @@ class IDTableRecord:
 				return
 		# если не был, добавляем новый идентификатор
 		self.parents_id.append(parent_id)
-	#-------------------------------
+
 	def add_member(self, member_id): # добавление нового члена идентификатора
 		# все аналогично предыдущей функции
 		if not self.members_id:
@@ -45,7 +44,7 @@ class IDTableRecord:
 			if id == member_id:
 				return
 		self.members_id.append(member_id)
-	#---------------------------
+
 	def add_base(self, base_id): # добавление базового класса
 		# аналогично предыдущей функции
 		if not self.bases:
@@ -54,7 +53,7 @@ class IDTableRecord:
 			if id == base_id:
 				return
 		self.bases.append(base_id)
-	#-------------------------------------
+
 	def add_inheritor(self, inheritor_id): # добавление наследника класса
 		# аналогично предыдущей функции
 		if not self.inheritors:
@@ -65,8 +64,6 @@ class IDTableRecord:
 		self.inheritors.append(inheritor_id)
 	def __str__(self):
 		info = ""
-		# if self.kind:
-			# info += self.kind + ' '
 		if self.modifier:
 			info += self.modifier + ' '
 		if self.type:
@@ -75,26 +72,24 @@ class IDTableRecord:
 		if self.args:
 			info += self.args
 		return info
-#---IDTableRecord END---
 
 # класс таблицы идентификаторов
 class IDTable:
 	now_id = None # текущий id
 	records = None # массив записей таблицы идентификаторов
 	
-	#------------------
 	def __init__(self):
 		self.records = [] # создаем массив записей
 		self.now_id = 0 # обнуляем текущий id
-	#-----------------
+
 	def __del__(self):
 		self.records = None # удаляем массив записей
 		self.now_id = None # удаляем текущий id
-	#---------------------------------------------------------------------
+
 	def add_record(self, name, kind, type=None, args=None, modifier=None): # добавление записи в таблицу
 		self.records.append( IDTableRecord(self.now_id, name, kind, type, args, modifier) )
 		self.now_id += 1
-	#---------------------------------------------------------
+
 	def add_parent(self, record_id, parent_name, parent_kind): # добавление родителя записи
 		# ищем запись, в которой добавляем родителя
 		record = self.get_record_by_id(record_id) 
@@ -110,7 +105,7 @@ class IDTable:
 			record.add_parent(parent_record.id)
 			# добавляем запись родителю в члены
 			parent_record.add_member(record.id)
-	#---------------------------------------------------
+
 	def add_base(self, record_id, base_name, base_type): # добавление базового класса
 		# работа аналогична предыдущей функции
 		record = self.get_record_by_id(record_id)
@@ -121,7 +116,7 @@ class IDTable:
 		if record:
 			record.add_base(base_record.id)
 			base_record.add_inheritor(record.id)
-	#---------------------------------------------------------------------------------------
+
 	def add_member(self, parent_id, c_name, c_kind, c_type=None, c_args=None, c_modif=None): # добавление члена текущей записи
 		parent_record = self.get_record_by_id(parent_id)
 		child_record = self.get_record_by_name_and_kind(c_name, c_kind)
@@ -131,7 +126,7 @@ class IDTable:
 		if parent_record:
 			child_record.add_parent(parent_record.id)
 			parent_record.add_member(child_record.id)
-	#------------------------------
+
 	def get_record_by_id(self, id, copy=False): # получение записи по идентификатору
 		if id < 0:
 			return None
@@ -141,7 +136,7 @@ class IDTable:
 					return deepcopy(record)
 				return record
 		return None
-	#----------------------------------
+
 	def get_record_by_name(self, name, copy=False): # по имени
 		for record in self.records:
 			if record.name == name:
@@ -149,7 +144,7 @@ class IDTable:
 					return deepcopy(record)
 				return record
 		return None
-	#-------------------------------------------------------------
+
 	def get_record_by_name_and_kind(self, name, kind, copy=False):
 		for record in self.records:
 			if record.name == name and record.kind == kind:
@@ -157,19 +152,19 @@ class IDTable:
 					return deepcopy(record)
 				return record
 		return None
-	#------------------------------
+
 	def get_id_by_name(self, name): # получение идентификатора по имени
 		for record in self.records:
 			if record.name == name:
 				return record.id
 		return -1
-	#--------------------------------
+
 	def get_kind_by_name(self, name):
 		for record in self.records:
 			if record.name == name:
 				return record.kind
 		return None
-	#-------------------
+
 	def print_all(self): # вывод таблицы идентификаторов
 		for record in self.records:
 			print(record.id, record.kind, 
@@ -177,7 +172,7 @@ class IDTable:
 				  record.args, record.parents_id,
 				  record.members_id,
 				  record.inheritors_id)
-	#-------------------------------------
+
 	def get_members_by_name(self, p_name):
 		members = []
 		parent_id = self.get_id_by_name(p_name)
@@ -188,7 +183,6 @@ class IDTable:
 				if id == parent_id:
 					members.append(deepcopy(record))
 		return members
-	#---------------------
+
 	def get_records(self):
 		return deepcopy(self.records)
-#---IDTable END---

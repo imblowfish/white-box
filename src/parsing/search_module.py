@@ -14,8 +14,6 @@ def get_all_pos_in_file(file_path, str):
 		if str in line:
 			lines.append(line_num)
 		line_num += 1
-	# content = file.read()
-	# pos = [m.start() for m in re.finditer(str, content)]
 	file.close()
 	return lines
 	

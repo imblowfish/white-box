@@ -1,4 +1,5 @@
 **/__pycache__
 /examples/
-/src/docs/
+/src/temp/
+/src/conf/
 /need_refac/

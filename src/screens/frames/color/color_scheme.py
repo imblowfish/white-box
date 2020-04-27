@@ -1,4 +1,4 @@
-# цветовая схема при выводе содержимого файла
+# цветовая схема подсветки синтаксиса
 file_content_color_scheme = {
 	"default": "black",
 	"preproc": "grey",

@@ -8,7 +8,6 @@ import parsing.doxygen_main as doxy
 class WhiteBoxCommands:
 	out_doc_path = "./temp/docs" # куда генерировать документацию doxygen
 	
-	#-----------------------------
 	def open_project(self, event): # открытие проекта
 		# запоминаем предыдущую директорию проекта
 		prev_dir = self.project_directory
@@ -22,7 +21,7 @@ class WhiteBoxCommands:
 		# получаем таблицу идентификаторов путем разбора документации doxygen
 		self.id_table = doxy.parse(doc_path, True)
 		self.show_hierarchy()
-	#------------------------
+
 	def show_hierarchy(self): # отображение иерархии проекта
 		# получаем дерево директории
 		tree = dir_par.get_dir_tree(self.project_directory)
@@ -30,7 +29,7 @@ class WhiteBoxCommands:
 		self.main_win.hierarchy_frame.show(tree)
 		# отображаем зависимость файлов
 		self.main_win.file_dependency_frame.show(self.id_table.get_records(), self.id_table)
-	#--------------------------------
+
 	def hierarchy_click(self, event): # обработка клика по иерархии
 		# получаем ссылку на виджет treeview фрейма отображения иерархии
 		tree = self.main_win.hierarchy_frame.tree_widget
@@ -52,12 +51,12 @@ class WhiteBoxCommands:
 		# отображение информации о файле
 		fif = self.main_win.file_info_frame
 		fif.show(record, self.id_table)
-	#-------------------------------------------
+
 	def file_content_click(self, event, text_tag): # обработка клика по тексту файла
 		print(f"file content click {text_tag}")
 		# открываем окно аналогично file_info_click
 		
-	#--------------------------------
+
 	def file_info_click(self, event):
 		print("file info click")
 		# отображение окна с информацией об идентификаторе
@@ -68,10 +67,8 @@ class WhiteBoxCommands:
 			# делаем open_file
 			return
 		record = self.id_table.get_record_by_name_and_kind(item[0], item[1], copy=True)
-		self.main_win.show_id_info(record, self.id_table)
 		mentions = sm.get_all_pos_in_dir(self.project_directory, item[0])
-		self.main_win.show_mentions(record, mentions)
+		self.main_win.show_id_info(record, self.id_table, mentions)
 		
-#---WhiteBoxCommands---
 		
 		

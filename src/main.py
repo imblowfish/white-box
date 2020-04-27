@@ -1,3 +1,3 @@
 from whitebox_core import WhiteBoxCore
 
-app = WhiteBoxCore()
+white_box = WhiteBoxCore()

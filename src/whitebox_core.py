@@ -4,14 +4,8 @@
 '''
 
 import tkinter as tk
-from screens.windows import (
-	MainWindow
-)
+from screens.windows import MainWindow
 from whitebox_core_commands import WhiteBoxCommands
-
-# отображение всех упоминаний в коде
-# модули по тематике
-# добавить везде скроллбары
 
 # Класс корня проекта
 class WhiteBoxCore(WhiteBoxCommands):
@@ -19,7 +13,6 @@ class WhiteBoxCore(WhiteBoxCommands):
 	id_table = None # таблица идентификаторов проекта
 	main_win = None # главное окно приложения
 	
-	#------------------
 	def __init__(self): # конструктор
 		print("WhiteBoxCore init")
 		# инициализация главного окна
@@ -30,7 +23,7 @@ class WhiteBoxCore(WhiteBoxCommands):
 		self.bind_commands()
 		# запуск главного окна
 		self.main_win.start()
-	#-------------------
+
 	def init_menu(self): # инициализация меню главного окна
 		# создание меню
 		self.main_win.menu_bar = tk.Menu(self.main_win.master)
@@ -39,11 +32,11 @@ class WhiteBoxCore(WhiteBoxCommands):
 		self.main_win.open_menu = tk.Menu(self.main_win.menu_bar, tearoff = 0)
 		self.main_win.menu_bar.add_cascade(label="File", menu=self.main_win.open_menu)
 		self.main_win.open_menu.add_command(label="Open project", command=lambda: self.open_project(None))
-	#-----------------------
+
 	def bind_commands(self): # связывание окон и фреймов с командами
 		tree = self.main_win.hierarchy_frame.tree_widget
 		tree.bind("<Double-Button-1>", self.hierarchy_click)
 		tree = self.main_win.file_info_frame.info_tree
 		tree.bind("<Double-Button-1>", self.file_info_click)
-#---WhiteBoxCore---
+
 	
