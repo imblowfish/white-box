@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import parsing.directory_parser as dir_par
+import parsing.search_module as sm
 import parsing.doxygen_main as doxy
 
 # список команд, наследуемых WhiteBoxCore
@@ -25,8 +26,10 @@ class WhiteBoxCommands:
 	def show_hierarchy(self): # отображение иерархии проекта
 		# получаем дерево директории
 		tree = dir_par.get_dir_tree(self.project_directory)
-		# отображаем
+		# отображаем иерархию
 		self.main_win.hierarchy_frame.show(tree)
+		# отображаем зависимость файлов
+		self.main_win.file_dependency_frame.show(self.id_table.get_records(), self.id_table)
 	#--------------------------------
 	def hierarchy_click(self, event): # обработка клика по иерархии
 		# получаем ссылку на виджет treeview фрейма отображения иерархии
@@ -66,6 +69,8 @@ class WhiteBoxCommands:
 			return
 		record = self.id_table.get_record_by_name_and_kind(item[0], item[1], copy=True)
 		self.main_win.show_id_info(record, self.id_table)
+		mentions = sm.get_all_pos_in_dir(self.project_directory, item[0])
+		self.main_win.show_mentions(record, mentions)
 		
 #---WhiteBoxCommands---
 		

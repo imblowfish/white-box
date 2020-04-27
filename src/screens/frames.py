@@ -4,6 +4,79 @@ from tkinter import messagebox
 import codecs
 
 from .project_tree import ProjectTree
+
+
+#
+import math
+class DependencyFrame2(tk.Frame):
+	prev_x = None
+	prev_y = None
+	def __init__(self, master, x=0, y=0, width=1, height=1):
+		tk.Frame.__init__(self, master)
+		self.place(relx=x, rely=y, relwidth=width, relheight=height)
+		self.init_widgets()
+		self.bind("<Configure>", self.resize)
+	def resize(self, event):
+		wscale = float(event.width)/float(self.canvas["width"])
+		hscale = float(event.height)/float(self.canvas["height"])
+		self.canvas.configure(width=event.width, height=event.height)
+		self.canvas.scale("all", 0, 0, wscale, hscale)
+	def init_widgets(self):
+		self.canvas = tk.Canvas(self, bg="white")
+		self.canvas.bind("<MouseWheel>", self.scale)
+		self.canvas.bind("<B1-Motion>", self.move)
+		self.canvas.bind("<ButtonRelease-1>", self.reset)
+		self.canvas.pack(fill=tk.BOTH)
+	def reset(self, event):
+		self.prev_x = None
+		self.prev_y = None
+		print("Release")
+	def move(self, event):
+		if self.prev_x and self.prev_y:
+			delta_x = event.x - self.prev_x
+			delta_y = event.y - self.prev_y
+			self.canvas.move("all", delta_x, delta_y)
+		self.prev_x = event.x
+		self.prev_y = event.y
+	def scale(self, event):
+		wscale, hscale = 0, 0
+		center_x, center_y = float(self.canvas["width"])/2, float(self.canvas["height"])/2
+		if event.delta < 0:
+			wscale=0.5
+			hscale=0.5
+		else:
+			wscale=1.5
+			hscale=1.5
+		self.canvas.scale("all", center_x, center_y, wscale, hscale)
+	def show(self, records, id_table):
+		self.canvas.delete("all")
+		files = []
+		for record in records:
+			if record.kind == "file":
+				files.append(record.name)
+		num_of_files = len(files)
+		alpha = (2 * math.pi)/num_of_files
+		dt = 3 * math.pi / 2
+		center_x = float(self.canvas["width"]) / 2
+		center_y = float(self.canvas["height"]) / 2
+		for record in records:
+			if record.kind != "file":
+				continue
+			rec_idx = files.index(record.name)
+			x1 = center_x + (math.sin(dt - rec_idx * alpha) * 180) / math.pi
+			y1 = center_y + (math.cos(dt - rec_idx * alpha) * 180) / math.pi
+			self.canvas.create_text(x1, y1, text=record.name, font=(None, 6))
+			if not record.parents_id:
+				continue
+			for id in record.parents_id:
+				parent = id_table.get_record_by_id(id)
+				if parent.kind != "file":
+					continue
+				par_idx = files.index(parent.name)
+				x2 = center_x + (math.sin(dt - par_idx * alpha) * 180) / math.pi
+				y2 = center_y + (math.cos(dt - par_idx * alpha) * 180) / math.pi
+				self.canvas.create_line(x2, y2, x1, y1, arrow=tk.LAST)
+
 # ВСЕ, ЧТО ОТНОСИТСЯ К ФРЕЙМУ ИЕРАРХИИ
 # отображение иерархии проекта
 class HierarchyFrame(tk.Frame):
@@ -23,7 +96,7 @@ class HierarchyFrame(tk.Frame):
 		# даем ему название
 		self.tree_widget.heading("#0", text="Project hierarchy")
 		# размещение
-		self.tree_widget.place(relx=0, rely=0, relwidth=1, relheight=1)
+		self.tree_widget.place(relx=0, rely=0, relwidth=1, relheight=1.0)
 	#---------------
 	def clear(self): # очистка treeview
 		if not self.tree_widget:
@@ -39,7 +112,7 @@ class HierarchyFrame(tk.Frame):
 		tree.create(hierarchy)
 		# заносим каждый узел в treeview
 		self.add_nodes(tree.root_elements)
-		# отображение графа зависимости файлов проекта	
+		# отображение графа зависимости файлов проекта
 	#-------------------------------------
 	def add_nodes(self, nodes, parent=""): # добавление нодов в treeview 
 		if not nodes:
@@ -84,6 +157,7 @@ class FileContentFrame(tk.Frame):
 		for line in file:
 			# отображение содержимого файла с подсветкой синтаксиса
 			self.text.insert(tk.END, line)
+		file.close()
 		return True
 		
 # отображение открываемых пользователем файлов
@@ -326,14 +400,46 @@ class DependencyFrame(tk.Frame):
 			parent = id_table.get_record_by_id(id, copy=True)
 			if parent:
 				parents.append(parent)
-			self.show_parents(parent.parents_id, id_table)
+			# self.show_parents(parent.parents_id, id_table)
 		self.dep_tree.add_next_level(parents)
-		
-class MentionsFrame(tk.Frame):
+
+# ВСЕ,ЧТО ОТНОСИТСЯ К УПОМИНАНИЯМ
+class MentionFrame(tk.Frame):
+	def __init__(self, master, x=0, y=0, width=1, height=1):
+		tk.Frame.__init__(self, master)
+		self.pack()
+		self.init_widgets()
+	def init_widgets(self):
+		pass
+	def show(self, file_path, mentions):
+		try:
+			file = codecs.open(file_path, "r", "utf_8_sig")
+		except:
+			messagebox.showerror("Open file error", f"Can't open file {file_path}")
+			return False
+		label = tk.Label(self, text=file_path)
+		label.pack()
+		line_num = 0
+		for line in file:
+			if line_num in mentions:
+				text = tk.Text(self,height=1)
+				text.insert(tk.END, line)
+				text.pack()
+			line_num += 1
+		file.close()
+		return True
+		  	
+class MentionsListFrame(tk.Frame):
 	def __init__(self, master, x=0, y=0, width=1, height=1):
 		tk.Frame.__init__(self, master)
 		self.place(relx=x, rely=y, relwidth=width, relheight=height)
 		self.init_widgets()
 	def init_widgets(self):
 		pass
+	def show(self, record, mentions):
+		for file_path in mentions:
+			frame = MentionFrame(self)
+			if not frame.show(file_path, mentions[file_path]):
+				messagebox.showerror("MentionsListFrame Error", "Can't show mentions")
+				return
 		
