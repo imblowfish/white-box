@@ -158,12 +158,26 @@ class IDTable:
 			if record.name == name:
 				return record.id
 		return -1
-
-	def get_kind_by_name(self, name):
+		
+	def has_record_in_file(self, file, name):
+		record = self.get_record_by_name_and_kind(file, "file")
+		if not record:
+			return False
+		return self.search_child_in_record(record, name)
+	
+	def search_child_in_record(self, record, name):
+		if not record.members_id:
+			return False
+		for id in record.members_id:
+			member = self.get_record_by_id(id)
+			if member.name == name or self.search_child_in_record(member, name):
+				return True
+		return False
+	def has_record(self, name):
 		for record in self.records:
 			if record.name == name:
-				return record.kind
-		return None
+				return True
+		return False
 
 	def print_all(self): # вывод таблицы идентификаторов
 		for record in self.records:

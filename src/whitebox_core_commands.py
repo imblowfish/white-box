@@ -47,18 +47,19 @@ class WhiteBoxCommands:
 		path = dir_par.get_path_from(self.project_directory, name)
 		# отображение содержимого файла
 		ff = self.main_win.files_frame
-		ff.open_file(name, path, self.file_content_click)
+		ff.open_file(name, path, self.file_content_click, self.id_table)
 		# отображение информации о файле
 		fif = self.main_win.file_info_frame
 		fif.show(record, self.id_table)
 
 	def file_content_click(self, event, text_tag): # обработка клика по тексту файла
-		print(f"file content click {text_tag}")
-		# открываем окно аналогично file_info_click
-		
+		if text_tag == "right_b":
+			print(self.main_win.files_frame.get_current().get_selected())
+		else:
+			name = self.main_win.files_frame.get_current().get_word_under(event, text_tag)
+			print(f"{name}")
 
 	def file_info_click(self, event):
-		print("file info click")
 		# отображение окна с информацией об идентификаторе
 		item = self.main_win.file_info_frame.get_item_info(event.x, event.y)
 		if not item:
