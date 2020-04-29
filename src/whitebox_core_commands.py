@@ -53,11 +53,16 @@ class WhiteBoxCommands:
 		fif.show(record, self.id_table)
 
 	def file_content_click(self, event, text_tag): # обработка клика по тексту файла
-		if text_tag == "right_b":
-			print(self.main_win.files_frame.get_current().get_selected())
-		else:
-			name = self.main_win.files_frame.get_current().get_word_under(event, text_tag)
-			print(f"{name}")
+		# вывод информации об идентификаторе
+		name = self.main_win.files_frame.get_current().get_word_under(event, text_tag)
+		if text_tag == "file":
+			# делаем open file
+			return
+		record = self.id_table.get_record_by_name(name, copy=True)
+		if not record:
+			return
+		mentions = sm.get_all_pos_in_dir(self.project_directory, name)
+		self.main_win.show_id_info(record, self.id_table, mentions)
 
 	def file_info_click(self, event):
 		# отображение окна с информацией об идентификаторе

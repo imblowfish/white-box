@@ -16,6 +16,13 @@ def get_path_from(project_dir, name):
 			if file == name:
 				return item[0]+'\\'+name
 	return ""
+import json
+def create_index(path):
+	os.mkdir(path)
+	data = {}
+	data["modules"] = []
+	with open(path+"/index.json", "w") as file:
+		json.dump(data, file)
 # иерархия директории
 def get_dir_tree(dir_path):
 	tree = os.walk(dir_path)

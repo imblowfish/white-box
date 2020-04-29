@@ -42,4 +42,5 @@ class MainWindow:
 		win.title("ID info")
 		id_info_frame = IDInfoFrame(win)
 		id_info_frame.show(record, id_table, mentions)
+		
 #---MainWindow---

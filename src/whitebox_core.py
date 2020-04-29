@@ -12,6 +12,7 @@ class WhiteBoxCore(WhiteBoxCommands):
 	project_directory = None # рабочая директория текущего проекта
 	id_table = None # таблица идентификаторов проекта
 	main_win = None # главное окно приложения
+	modules_path = "./modules/"
 	
 	def __init__(self): # конструктор
 		print("WhiteBoxCore init")
