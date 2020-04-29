@@ -1,0 +1,8 @@
+{
+    "sdl_wiki": {
+        "directory": "./database/sdl_wiki",
+        "file": "./grabbers/sdl_wiki.py",
+        "last_update": "30-4-2020 2.22.28",
+        "update_after_days": 1
+    }
+}
