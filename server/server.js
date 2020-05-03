@@ -5,10 +5,12 @@ let path = require("path");
 let mimeTypes = {
 	".html" : "text/html",
 	".js" : "text/javascript",
-	".css" : "text/css"
+	".css" : "text/css",
+	".7z" : "application/zip"
 };
 
 let database = "./database"
+let localDatabasePath = "./database/l_database.7z"
 let last_dir = "";
 
 function main(req, res){
@@ -39,17 +41,29 @@ function main(req, res){
 			}
 		}
 		console.log(file_path);
+	}else if(file_ext == ".7z"){
+		if(fs.existsSync(localDatabasePath))
+			file_path = localDatabasePath;
+		else{
+			file_path = "no_local_database.html";
+			contentType = mimeTypes[".html"];
+		}
 	}else{
 		file_path = last_dir + "/style/" + file_name;
 	}
 	fs.readFile(file_path, (error, content) => {
 		if(error){
 			res.writeHead(404);
-			res.end("404 not found");
+			res.end("404 not found", "utf-8");
 		}else{
-			console.log(contentType);
-			res.writeHead(200, {"Content-Type": contentType});
-			res.end(content, "utf-8");
+			if(file_path == "no_local_database.html"){
+				res.writeHead(404, {"Content-Type": contentType});
+				res.end(content, "utf-8");
+			}else{
+				res.writeHead(200, {"Content-Type": contentType});
+				res.end(content, "utf-8");
+			}
+			
 		}
 	});
 	

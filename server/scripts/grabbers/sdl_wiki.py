@@ -27,19 +27,18 @@ class SDLWikiParser(BaseGrabber):
 			return False
 		soup = BeautifulSoup(page.content, "html.parser")
 		page = soup.find("div", {"id": "page"})
+		
+		# переделываем все ссылки на локальные
+		refs = page.find_all("a", href=True)
+		for ref in refs:
+			href = ref["href"]
+			if href.find("#") == -1:
+				ref["href"] += ".html"
+		#
+		
 		if not self.save_html(self.dir, ident_name, page):
 			return False
 		return True
 
-# import sys
-# def do_command():
-	# if len(sys.argv) < 2:
-		# print("Too few arguments")
-		# return
 sdl_p = SDLWikiParser()
 sdl_p.parse()
-# ident_page = sdl_p.has_ident("SDL_HINT_AROMETER_AS_JOYSTICK")
-# if ident_page:
-	# print("Can show page")
-# else:
-	# print("Can't show page")

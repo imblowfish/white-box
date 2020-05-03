@@ -1,30 +1,31 @@
 import os, json, datetime, time
 import sys, subprocess, shutil
+import archive_worker as aw
 
 class GrabManager:
-	dir = "../database"
+	database_dir = "../database"
 	grab_dir = "./grabbers"
+	local_database_name = "l_database.7z"
 	grabbers_info = None
 	
 	def __init__(self):
-		# print("GrabManager init")
-		if not os.path.exists(f"{self.dir}"):
-			print(f"Create directory {self.dir}")
-			os.mkdir(self.dir)
-		if not os.path.exists(f"{self.dir}/index.json"):
-			print(f"Create {self.dir}/index.json")
+		if not os.path.exists(f"{self.database_dir}"):
+			print(f"Create directory {self.database_dir}")
+			os.mkdir(self.database_dir)
+		if not os.path.exists(f"{self.database_dir}/index.json"):
+			print(f"Create {self.database_dir}/index.json")
 			data = {}
 			self.save_data(data)
 		if not self.load_data():
 			return
 		
 	def save_data(self, data):
-		with open(f"{self.dir}/index.json", "w") as file:
+		with open(f"{self.database_dir}/index.json", "w") as file:
 			json.dump(data, file, sort_keys=True, indent=4)
 			
 	def load_data(self):
 		try:
-			with open(f"{self.dir}/index.json", "r") as file:
+			with open(f"{self.database_dir}/index.json", "r") as file:
 				self.grabbers_info = json.load(file)
 		except:
 			print("GrabManager, error with loading grabbers_info")
@@ -33,25 +34,23 @@ class GrabManager:
 		return True
 		
 	def add_grabber(self, grabber_name, update_days = 1):
-		if os.path.exists(f"{self.dir}/{grabber_name}"):
+		if os.path.exists(f"{self.database_dir}/{grabber_name}"):
 			print(f"Grabber {grabber_name} exist")
 			return
 		self.init_grabber_dir(grabber_name)
 		now = datetime.datetime(1970, 1, 1)
 		self.grabbers_info[grabber_name] = {
-						"directory": f"{self.dir}/{grabber_name}",
+						"directory": f"{self.database_dir}/{grabber_name}",
 						"file": f"{self.grab_dir}/{grabber_name}.py",
 						"last_update": f"{now.day}-{now.month}-{now.year} {now.hour}.{now.minute}.{now.second}",
 						"update_after_days": update_days
 					}
-		self.save_data(self.grabbers_info)
-		print(f"Grabber {grabber_name} added")
 		
 	def init_grabber_dir(self, grabber_name):
-		os.mkdir(f"{self.dir}/{grabber_name}")
-		os.mkdir(f"{self.dir}/{grabber_name}/pages")
-		os.mkdir(f"{self.dir}/{grabber_name}/style")
-		with open(f"{self.dir}/{grabber_name}/style/style.css", "w") as file:
+		os.mkdir(f"{self.database_dir}/{grabber_name}")
+		os.mkdir(f"{self.database_dir}/{grabber_name}/pages")
+		os.mkdir(f"{self.database_dir}/{grabber_name}/style")
+		with open(f"{self.database_dir}/{grabber_name}/style/style.css", "w") as file:
 			pass
 		
 	def need_update_list(self):
@@ -77,6 +76,11 @@ class GrabManager:
 			now = datetime.datetime.now()
 			self.grabbers_info[grab_name]["last_update"] = f"{now.day}-{now.month}-{now.year} {now.hour}.{now.minute}.{now.second}"
 			print(f"Updating {grab_name} done")
+		self.save_data(self.grabbers_info)
+		print(f"Grabber {grabber_name} added")
+		print("Create database archive")
+		aw.zip_dir(self.database_dir, {self.database_dir}/{self.local_database_name})
+		print("Database archive created")
 		
 	def list(self):
 		self.load_data()
@@ -90,7 +94,7 @@ class GrabManager:
 		for name in self.grabbers_info:
 			if name == grab_name:
 				del self.grabbers_info[name]
-				shutil.rmtree(f"{self.dir}/{name}")
+				shutil.rmtree(f"{self.database_dir}/{name}")
 				print(f"Grabber {grab_name} deleted")
 				print(self.grabbers_info)
 				self.save_data(self.grabbers_info)
@@ -100,7 +104,7 @@ class GrabManager:
 	def has_ident(self, id_name):
 		self.load_data()
 		for grab_name in self.grabbers_info:
-			page_path = f"{self.dir}/{grab_name}/pages/{id_name}.html"
+			page_path = f"{self.database_dir}/{grab_name}/pages/{id_name}.html"
 			print(page_path)
 			if not os.path.exists(page_path):
 				return (False, None)
