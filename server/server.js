@@ -20,7 +20,8 @@ function main(req, res){
 	let contentType = mimeTypes[file_ext];
 	
 	if (file_ext.length == 0){
-		file_name = "index.html";
+		file_path = "index.html";
+		contentType = mimeTypes[".html"];
 	}else if(file_ext == ".html"){
 		let jsonData = fs.readFileSync(database + "/index.json")
 		let data = JSON.parse(jsonData);
@@ -41,12 +42,12 @@ function main(req, res){
 	}else{
 		file_path = last_dir + "/style/" + file_name;
 	}
-	
 	fs.readFile(file_path, (error, content) => {
 		if(error){
 			res.writeHead(404);
 			res.end("404 not found");
 		}else{
+			console.log(contentType);
 			res.writeHead(200, {"Content-Type": contentType});
 			res.end(content, "utf-8");
 		}
