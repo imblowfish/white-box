@@ -5,7 +5,6 @@ class SDLWikiParser(BaseGrabber):
 	begin_url = "https://wiki.libsdl.org"
 	search_url = "https://wiki.libsdl.org/CategoryAPI"
 	dir = "../database/sdl_wiki"
-	
 	def parse_idents_list(self):
 		self.page = self.get_page(self.search_url)
 		if not self.page:
@@ -31,7 +30,12 @@ class SDLWikiParser(BaseGrabber):
 		if not self.save_html(self.dir, ident_name, page):
 			return False
 		return True
-		
+
+# import sys
+# def do_command():
+	# if len(sys.argv) < 2:
+		# print("Too few arguments")
+		# return
 sdl_p = SDLWikiParser()
 sdl_p.parse()
 # ident_page = sdl_p.has_ident("SDL_HINT_AROMETER_AS_JOYSTICK")

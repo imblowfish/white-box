@@ -2,4 +2,5 @@
 /examples/
 /src/temp/
 /src/conf/
-/need_refac/
+/server/database/
+/server/node_modules/

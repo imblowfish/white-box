@@ -2,8 +2,20 @@ import requests as req
 import json
 import time
 import os
+import random
 
 class BaseGrabber:
+	header = f"\
+	<!DOCTYPE html>\
+	<html>\
+	<head>\
+	<link rel='stylesheet' type='text/css' href='../style/style.css'>\
+	</head>\
+	<body>\
+	%s\
+	</body>\
+	</html>\
+	"
 	def get_page(self, url):
 		page = req.get(url)
 		if page.status_code != 200:
@@ -23,7 +35,7 @@ class BaseGrabber:
 	def save_html(self, path, ident_name, data):
 		try:
 			with open(f"{path}/pages/{ident_name}.html", "w") as file:
-				file.write(str(data))
+				file.write(self.header % str(data))
 		except:
 			print(f"Error with writing html {ident_name}")
 			return False
@@ -45,7 +57,7 @@ class BaseGrabber:
 				print(f"Error with parsing page {key}")
 				return
 			print(f"Parsing {key} ended")
-			time.sleep(5)
+			time.sleep(random.randint(2, 30))
 		return True
 			
 	def parse_idents_list(self, path):
