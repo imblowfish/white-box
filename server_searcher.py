@@ -47,7 +47,7 @@ def search(id_name):
 	else:
 		return INTERNET
 
-search_on_net("SDL_HINT_ACCELEROMETER_AS_JOYSTICK")
+# search_on_net("SDL_HINT_ACCELEROMETER_AS_JOYSTICK")
 # result = search("SDL_HINT_ACCELEROMETER_AS_JOYSTICK")
 # print(result)	
 # res = search_on_server(g_host, g_port, "SDL_HINT_ACCELEROMETER_AS_JOYSTICK")
