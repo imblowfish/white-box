@@ -62,8 +62,11 @@ class IDTableRecord:
 			if id == inheritor_id:
 				return
 		self.inheritors.append(inheritor_id)
+		
 	def __str__(self):
 		info = ""
+		if self.kind:
+			info += self.kind + ' '
 		if self.modifier:
 			info += self.modifier + ' '
 		if self.type:

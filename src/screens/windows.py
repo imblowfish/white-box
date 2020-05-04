@@ -3,7 +3,6 @@ import tkinter as tk
 from .frames.hierarchy import HierarchyFrame
 from .frames.files import FilesFrame
 from .frames.file_info import FileInfoFrame
-from .frames.id_info import IDInfoFrame
 from .frames.file_dependencies import FileDependenciesFrame
 
 # класс главного окна
@@ -35,12 +34,5 @@ class MainWindow:
 
 	def start(self): # начало работы окна
 		self.master.mainloop()
-
-	def show_id_info(self, record, id_table, mentions):
-		win = tk.Toplevel()
-		win.geometry("500x500")
-		win.title("ID info")
-		id_info_frame = IDInfoFrame(win)
-		id_info_frame.show(record, id_table, mentions)
 		
 #---MainWindow---

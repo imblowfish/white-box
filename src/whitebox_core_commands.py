@@ -3,6 +3,7 @@ from tkinter import filedialog
 import parsing.directory_parser as dir_par
 import parsing.search_module as sm
 import parsing.doxygen_main as doxy
+from doc_generators.id_info_generator import IDInfoGenerator
 
 # список команд, наследуемых WhiteBoxCore
 class WhiteBoxCommands:
@@ -62,7 +63,10 @@ class WhiteBoxCommands:
 		if not record:
 			return
 		mentions = sm.get_all_pos_in_dir(self.project_directory, name)
-		self.main_win.show_id_info(record, self.id_table, mentions)
+		# генерация html-документа с информацией об идентификаторе
+		id_info_generator = IDInfoGenerator()
+		id_info_generator.generate(record, self.id_table, mentions)
+		# открытие html-документа в просмотрщике
 
 	def file_info_click(self, event):
 		# отображение окна с информацией об идентификаторе

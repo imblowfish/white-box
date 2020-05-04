@@ -9,10 +9,10 @@ def get_all_pos_in_file(file_path, str):
 		print(f"Something went wrong with open file {file_path} in search_module")
 		return
 	lines = []
-	line_num = 0
+	line_num = 1
 	for line in file:
 		if str in line:
-			lines.append(line_num)
+			lines.append((line_num, line))
 		line_num += 1
 	file.close()
 	return lines
@@ -24,11 +24,13 @@ def get_all_pos_in_dir(dir_path, str):
 	pos = {}
 	for node in tree:
 		for file in node[2]:
-			pos[node[0] + '\\' + file] = []
+			pos[node[0] + '\\' + file] = {
+				"name": file
+			}
 	delete_keys = []
 	for key in pos.keys():
-		pos[key] = get_all_pos_in_file(key, str)
-		if len(pos[key]) == 0:
+		pos[key]["lines"] = get_all_pos_in_file(key, str)
+		if len(pos[key]["lines"]) == 0:
 			delete_keys.append(key)
 	for key in delete_keys:
 		del pos[key]
