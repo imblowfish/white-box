@@ -31,8 +31,13 @@ class WhiteBoxCore(WhiteBoxCommands):
 		self.main_win.master["menu"] = self.main_win.menu_bar
 		# создание пунктов меню
 		self.main_win.open_menu = tk.Menu(self.main_win.menu_bar, tearoff = 0)
+		self.main_win.database_menu = tk.Menu(self.main_win.menu_bar, tearoff = 0)
+		
 		self.main_win.menu_bar.add_cascade(label="File", menu=self.main_win.open_menu)
+		self.main_win.menu_bar.add_cascade(label="Database", menu=self.main_win.database_menu)
+		
 		self.main_win.open_menu.add_command(label="Open project", command=lambda: self.open_project(None))
+		self.main_win.database_menu.add_command(label="Download database", command=self.download_database)
 
 	def bind_commands(self): # связывание окон и фреймов с командами
 		tree = self.main_win.hierarchy_frame.tree_widget

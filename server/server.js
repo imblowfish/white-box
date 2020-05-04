@@ -6,11 +6,11 @@ let mimeTypes = {
 	".html" : "text/html",
 	".js" : "text/javascript",
 	".css" : "text/css",
-	".7z" : "application/zip"
+	".zip" : "application/zip"
 };
 
 let database = "./database"
-let localDatabasePath = "./database/l_database.7z"
+let localDatabasePath = "./database_storage/database.zip"
 let last_dir = "";
 
 function main(req, res){
@@ -41,7 +41,7 @@ function main(req, res){
 			}
 		}
 		console.log(file_path);
-	}else if(file_ext == ".7z"){
+	}else if(file_ext == ".zip"){
 		if(fs.existsSync(localDatabasePath))
 			file_path = localDatabasePath;
 		else{

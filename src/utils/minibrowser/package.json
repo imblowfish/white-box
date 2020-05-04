@@ -1,6 +1,6 @@
 {
   "name": "minibrowser",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "minibrowser for view html pages in whitebox",
   "main": "main.js",
   "scripts": {
@@ -12,5 +12,6 @@
   "devDependencies": {
     "electron": "^8.2.5",
     "electron-log": "^4.1.2"
-  }
+  },
+  "dependencies": {}
 }

@@ -1,9 +1,18 @@
+import subprocess
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 import parsing.directory_parser as dir_par
 import parsing.search_module as sm
 import parsing.doxygen_main as doxy
 from doc_generators.id_info_generator import IDInfoGenerator
+from utils.database_downloader import DatabaseDownloader
+from utils.server_searcher import ServerSearcher
+
+
+def run_minibrowser(where_to_look="local", path="../../temp/html/output.html"):
+	mini_browser_path = "./utils/minibrowser/"
+	subprocess.Popen(["npm", "run", "start", "--prefix", mini_browser_path, where_to_look, path], shell=True)
 
 # список команд, наследуемых WhiteBoxCore
 class WhiteBoxCommands:
@@ -61,12 +70,23 @@ class WhiteBoxCommands:
 			return
 		record = self.id_table.get_record_by_name(name, copy=True)
 		if not record:
+			# пытаемся найти на серверах
+			s_search = ServerSearcher()
+			res = s_search.search(name)
+			print(res)
+			if res[0] != "net":
+				run_minibrowser(res[0], res[1])
+			else:
+				res = messagebox.askyesno("Message", f"Can't find '{name}' on local storage and on server, try to search on internet?")
+				if res:
+					s_search.search_on_net(name)
 			return
 		mentions = sm.get_all_pos_in_dir(self.project_directory, name)
 		# генерация html-документа с информацией об идентификаторе
 		id_info_generator = IDInfoGenerator()
 		id_info_generator.generate(record, self.id_table, mentions)
-		# открытие html-документа в просмотрщике
+		# открытие html-документа
+		run_minibrowser()
 
 	def file_info_click(self, event):
 		# отображение окна с информацией об идентификаторе
@@ -80,5 +100,12 @@ class WhiteBoxCommands:
 		mentions = sm.get_all_pos_in_dir(self.project_directory, item[0])
 		self.main_win.show_id_info(record, self.id_table, mentions)
 		
+	def download_database(self):
+		dd = DatabaseDownloader()
+		res = dd.download(unzip=True)
+		if not res[0]:
+			messagebox.showerror(f"Error with downloading databas", res[1])
+		else:
+			messagebox.showinfo("Download result", "Success")
 		
 		

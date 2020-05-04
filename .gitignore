@@ -2,6 +2,7 @@
 /examples/
 /src/temp/
 /src/conf/
+/src/database/
+/src/utils/minibrowser/node_modules/
 /server/database/
 /server/node_modules/
-/mini_html_viewer/node_modules/

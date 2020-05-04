@@ -1,11 +1,12 @@
 import os, json, datetime, time
 import sys, subprocess, shutil
-import archive_worker as aw
+from zip_worker import ZipWorker
 
 class GrabManager:
 	database_dir = "../database"
+	output_dir = "../database_storage"
 	grab_dir = "./grabbers"
-	local_database_name = "l_database.7z"
+	local_database_name = "database.zip"
 	grabbers_info = None
 	
 	def __init__(self):
@@ -69,17 +70,18 @@ class GrabManager:
 		if len(update_list) == 0:
 			print("Nothing update")
 			return
-		for grab_name in update_list:
-			print(f"Updating {grab_name}...")
-			command = f"python {self.grab_dir}/{grab_name}.py"
-			subprocess.run(command, shell=True)
-			now = datetime.datetime.now()
-			self.grabbers_info[grab_name]["last_update"] = f"{now.day}-{now.month}-{now.year} {now.hour}.{now.minute}.{now.second}"
-			print(f"Updating {grab_name} done")
-		self.save_data(self.grabbers_info)
-		print(f"Grabber {grabber_name} added")
+		# for grab_name in update_list:
+			# print(f"Updating {grab_name}...")
+			# command = f"python {self.grab_dir}/{grab_name}.py"
+			# subprocess.run(command, shell=True)
+			# now = datetime.datetime.now()
+			# self.grabbers_info[grab_name]["last_update"] = f"{now.day}-{now.month}-{now.year} {now.hour}.{now.minute}.{now.second}"
+			# print(f"Updating {grab_name} done")
+		# self.save_data(self.grabbers_info)
+		# print(f"Grabber {grabber_name} added")
 		print("Create database archive")
-		aw.zip_dir(self.database_dir, {self.database_dir}/{self.local_database_name})
+		zw = ZipWorker()
+		zw.zip_dir(self.database_dir, f"{self.output_dir}/{self.local_database_name}")
 		print("Database archive created")
 		
 	def list(self):
