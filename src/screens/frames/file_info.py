@@ -24,7 +24,15 @@ class FileInfoFrame(BaseFrame):
 		style.configure("Treeview.Heading", font=(None, 7), align=tk.CENTER)
 		self.info_tree = ttk.Treeview(self, style="Treeview.Heading")
 		self.info_tree.heading("#0", text="File info")
-		self.info_tree.place(relx=0, rely=0, relwidth=1, relheight=1)
+		
+		yscroll = tk.Scrollbar(self, command=self.info_tree.yview)
+		xscroll = tk.Scrollbar(self, command=self.info_tree.xview, orient="horizontal")
+		self.info_tree["yscrollcommand"] = yscroll.set
+		self.info_tree["xscrollcommand"] = xscroll.set
+		
+		self.info_tree.place(relx=0, rely=0, relwidth=1, relheight=0.93)
+		yscroll.place(relx=0.93, rely=0, relwidth=0.07, relheight=1)
+		xscroll.place(relx=0, rely=0.93, relwidth=1, relheight=0.07)
 	
 	def show(self, record, id_table):
 		self.clear()

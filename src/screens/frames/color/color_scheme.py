@@ -8,5 +8,7 @@ file_content_color_scheme = {
 	"comment": "grey",
 	"multiline comment": "grey",
 	"num": "#4a8394",
-	"float num": "#4a8394"
+	"float num": "#4a8394",
+	"line": "grey"
 }
+file_content_select_bg = "#c0e6ed"

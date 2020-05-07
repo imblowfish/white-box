@@ -88,6 +88,11 @@ class IDTable:
 	def __del__(self):
 		self.records = None # удаляем массив записей
 		self.now_id = None # удаляем текущий id
+		
+	def empty(self):
+		if len(self.records) == 0:
+			return True
+		return False
 
 	def add_record(self, name, kind, type=None, args=None, modifier=None): # добавление записи в таблицу
 		self.records.append( IDTableRecord(self.now_id, name, kind, type, args, modifier) )
@@ -176,6 +181,7 @@ class IDTable:
 			if member.name == name or self.search_child_in_record(member, name):
 				return True
 		return False
+		
 	def has_record(self, name):
 		for record in self.records:
 			if record.name == name:

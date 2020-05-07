@@ -16,6 +16,7 @@ class HTMLGenerator:
 	<div class='mentions'>%s</div>\
 	</body>\
 	<html>"
+	
 	member_info="<div class='member'>%s</div>"
 	mention_info="<div class='mention'>%s</div>"
 	
@@ -30,14 +31,16 @@ class HTMLGenerator:
 			# члены идентификатора
 			for id in record.members_id:
 				member = id_table.get_record_by_id(id)
-				members_content += self.member_info % self.to_html(member)
+				members_content += self.member_info % self.record_to_html(member)
 		if len(mentions) > 0:
 			# упоминания
 			mentions_content = self.generate_mentions(mentions)
-			# запись в файл
-		page = self.document % (title, str(record), members_content, mentions_content)
-		# page = self.document % (title, content)
-		file = open(f"{self.output_path}/output.html", "w")
+		page = self.document % (title, self.record_to_html(record), members_content, mentions_content)
+		try:
+			file = open(f"{self.output_path}/output.html", "w")
+		except:
+			print("Generate html open file error")
+			return False
 		file.write(page)
 		file.close()
 		return True
@@ -53,7 +56,7 @@ class HTMLGenerator:
 				content += mention_text%(mention[0], mention[1])
 		return self.mention_info % content
 		
-	def to_html(self, member):
+	def record_to_html(self, member):
 		str = ""
 		if member.kind:
 			str += f"<span class='kind'>{member.kind} </span>"

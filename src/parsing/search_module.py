@@ -18,13 +18,13 @@ def get_all_pos_in_file(file_path, str):
 	return lines
 	
 def get_all_pos_in_dir(dir_path, str):
-	tree = dp.get_dir_tree(dir_path)
+	tree = dp.dir_tree(dir_path)
 	if not tree:
 		return
 	pos = {}
 	for node in tree:
 		for file in node[2]:
-			pos[node[0] + '\\' + file] = {
+			pos[f"{node[0]}\\{file}"] = {
 				"name": file
 			}
 	delete_keys = []

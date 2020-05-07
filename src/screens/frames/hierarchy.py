@@ -14,8 +14,21 @@ class HierarchyFrame(BaseFrame):
 		self.tree_widget = ttk.Treeview(self, style="Treeview.Heading")
 		# даем ему название
 		self.tree_widget.heading("#0", text="Project hierarchy")
+		
+		yscroll = tk.Scrollbar(self, command=self.tree_widget.yview)
+		xscroll = tk.Scrollbar(self, command=self.tree_widget.xview, orient="horizontal")
+		self.tree_widget["yscrollcommand"] = yscroll.set
+		self.tree_widget["xscrollcommand"] = xscroll.set
+		
+		
 		# размещение
-		self.tree_widget.place(relx=0, rely=0, relwidth=1, relheight=1.0)
+		self.tree_widget.place(relx=0, rely=0, relwidth=1, relheight=0.93)
+		yscroll.place(relx=0.93, rely=0, relwidth=0.07, relheight=1)
+		xscroll.place(relx=0, rely=0.93, relwidth=1, relheight=0.07)
+		
+		
+	def get_name(self, event):
+		return self.tree_widget.item(self.tree_widget.identify("item", event.x, event.y), "text")
 	
 	def show(self, hierarchy): # отображение иерархии проекта
 		# очищаем treeview

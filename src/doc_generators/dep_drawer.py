@@ -2,72 +2,99 @@ from math import fabs
 from PIL import Image, ImageDraw, ImageFont
 
 class DependencyTree:
+	depth = None
 	save_path = None
-	font = "./conf/open-sans/OpenSans-Light.ttf"
-	levels = None
 	width = 500
 	height = 500
+	icon_size = 40
+	font = "./conf/open-sans/OpenSans-Light.ttf"
+	name_font = ImageFont.truetype(font, 15)
+	connect_font = ImageFont.truetype(font, 10)
+	
 	def __init__(self, gen_path):
 		self.save_path = gen_path+"/deps.png"
 		self.image = Image.new("RGB", (self.width, self.height), color="white")
 		self.draw = ImageDraw.Draw(self.image)
-		self.levels = []
-	def clear(self):
-		self.levels = []
-		self.draw.rectangle((0, 0, self.width, self.height), fill="white")
-	def add_root(self, record):
-		self.levels.append([(record.kind, record.name)])
-	def add_next_level(self, records):
-		level = []
-		for record in records:
-			level.append((record.kind, record.name))
-		self.levels.append(level)
-		
-	def draw_image(self):
-		depth = len(self.levels)
-		step_y = float(self.height)/depth
-		for i in range(depth):
-			num_on_layer = len(self.levels[i])
-			step_x = float(self.width) / (num_on_layer+1)
-			for j in range(len(self.levels[i])):
-				if i+1 >= depth:
-					self.draw_node(self.levels[i][j], i, j+1, step_x, step_y, root=True)
-				else:
-					self.draw_node(self.levels[i][j], i, j+1, step_x, step_y)
+	
+	def set_depth(self, depth):
+		self.depth = depth
+		self.step_y = float(self.height) / (depth+1)
+	
+	def save(self):
 		self.image.save(self.save_path)
-					
-	def draw_node(self, node, level, num, step_x, step_y, root=False):
-		x1 = num * step_x
-		y1 = level * step_y + 20
-		x2 = x1 + float(self.width)/10
-		y2 = y1 + float(self.height)/10
-		if root:
-			self.draw_kind(node[0], x1, y1, x2, y2, "red")
-		else:
-			self.draw_kind(node[0], x1, y1, x2, y2)
-		self.draw.text((x1, y1), node[1], font=ImageFont.truetype(self.font), fill="black")
+	
+	def draw_node(self, record, layer, num, layer_size):
+		step_x = float(self.width) / (layer_size+1)
+		x1 = (num+1) * step_x
+		y1 = (self.depth - layer) * self.step_y + self.icon_size
+		x2 = x1 + self.icon_size
+		y2 = y1 + self.icon_size
+		self.draw.line((x1, y1, x2, y1), fill="black", width=2)
+		self.draw.line((x1, y2, x2, y2), fill="black", width=2)
 		
-	def draw_kind(self, kind, x1, y1, x2, y2, color="black"):
-		if kind == "file":
-			self.draw.rectangle([x1, y1, x2, y2], outline=color)
-		elif kind == "class":
-			self.draw.ellipse([x1, y1, x2, y2], outline=color)
+		w, h = self.draw.textsize(f"{record.kind}:{record.name}", font=self.name_font)
+		text_x = (x1+x2)/2 - w/2
+		text_y = (y1+y2)/2 - h/2
+		self.draw.text((text_x, text_y), f"{record.kind}:{record.name}", font=self.name_font, fill="black")
+
+	def connect(self, node1, node2, connection_type):
+		layer, num, layer_size = node1
+		step_x = float(self.width) / (layer_size+1)
+		x1 = (num+1) * step_x + self.icon_size/2
+		y1 = (self.depth - layer) * self.step_y + self.icon_size
 		
+		layer, num, layer_size = node2
+		step_x = float(self.width) / (layer_size+1)
+		x2 = (num+1) * step_x + self.icon_size/2
+		y2 = (self.depth - layer) * self.step_y + 2*self.icon_size
+		self.draw.line((x1, y1, x2, y2), fill="black")
+		
+		w, h = self.draw.textsize(connection_type, font=self.connect_font)
+		text_x = (x1+x2)/2 - w/2
+		text_y = (y1+y2)/2 - h/2
+		
+		self.draw.rectangle((text_x, text_y, text_x+w, text_y+h), fill="white")
+		self.draw.text((text_x, text_y), connection_type, font=self.connect_font, fill="black")
+	
 class DependenciesDrawer:
+	# типа связей между записями
+	connections = {
+		"file in file": "include",
+		"class in file": "inner",
+		"function in file": "inner",
+		"enum in file": "inner",
+		"function in class": "member",
+	}
 	def __init__(self, gen_path):
 		self.dep_tree = DependencyTree(gen_path)
 	def draw(self, record, id_table):
-		self.dep_tree.clear()
-		self.add_parents(record.parents_id, id_table)
-		self.dep_tree.add_root(record)
-		self.dep_tree.draw_image()
-	def add_parents(self, parents_id, id_table):
-		if not parents_id:
-			return None
+		self.dep_tree.set_depth( self.calculate_depth(record, id_table) )
+		self.draw_level(record, id_table)
+		self.dep_tree.save()
+		
+	def calculate_depth(self, record, id_table, now_depth=1):
+		if not record.parents_id:
+			return 1
+		max_depth = 0
+		for id in record.parents_id:
+			parent = id_table.get_record_by_id(id)
+			parent_depth = self.calculate_depth(parent, id_table)
+			if parent_depth > max_depth:
+				max_depth = parent_depth
+		return now_depth+max_depth
+		
+	def draw_level(self, record, id_table, layer=1, num=0, layer_size=1):
+		self.dep_tree.draw_node(record, layer, num, layer_size)
+		if not record.parents_id:
+			return
 		parents = []
-		for id in parents_id:
-			parent = id_table.get_record_by_id(id, copy=True)
-			if parent:
-				parents.append(parent)
-			self.add_parents(parent.parents_id, id_table)
-		self.dep_tree.add_next_level(parents)
+		for id in record.parents_id:
+			parents.append(id_table.get_record_by_id(id))
+		for i, parent in enumerate(parents):
+			self.draw_level(parent, id_table, layer+1, i, len(parents))
+			try:
+				con_type = self.connections[f"{record.kind} in {parent.kind}"]
+			except:
+				print(f"Index error in dep_drawer connections {record.kind} in {parent.kind}")
+				input()
+			self.dep_tree.connect((layer, num, layer_size), (layer+1, i, len(parents)), con_type)

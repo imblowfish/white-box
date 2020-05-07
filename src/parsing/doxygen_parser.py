@@ -25,11 +25,12 @@ class BaseXMLParser:
 			tree = et.parse(file_path)
 		except:
 			print(f"BaseXMLParser: Something went wrong with parsing {file_path}")
-			return
+			return False
 		#получаем корень
 		self.root = tree.getroot()
 		#начинаем разбор с корня
 		self.parse_xml_node(self.root)
+		return True
 		# print(f"BaseXMLParser: {file_path} success parsing")
 
 	def node_has_attrib(self, node, tags): # проверка, содержит ли узел xml атрибут
@@ -85,6 +86,7 @@ class SourceFileParser(BaseXMLParser):
 			super().parse(self.now_file.ref)
 		# удаляем ссылку на файл
 		self.now_file = None
+		return True
 
 	def parse_xml_node(self, node):
 		# получаем список включаемых файлов текущего файла
@@ -152,6 +154,7 @@ class ClassParser(BaseXMLParser):
 		for self.now_class in classes:
 			super().parse(self.now_class.ref)
 		self.now_class = None
+		return True
 
 	def parse_xml_node(self, node):
 		# получаем список классов класса

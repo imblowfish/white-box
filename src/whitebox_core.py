@@ -12,16 +12,18 @@ class WhiteBoxCore(WhiteBoxCommands):
 	project_directory = None # рабочая директория текущего проекта
 	id_table = None # таблица идентификаторов проекта
 	main_win = None # главное окно приложения
-	modules_path = "./modules/"
 	
 	def __init__(self): # конструктор
-		print("WhiteBoxCore init")
 		# инициализация главного окна
 		self.main_win= MainWindow()
 		# меню
 		self.init_menu()
+		self.main_win.log("Menu inited")
 		# привязка команд
 		self.bind_commands()
+		self.main_win.log("Commands binded")
+		self.main_win.log("WhiteBoxCore init")
+		self.main_win.log("Start MainWindow")
 		# запуск главного окна
 		self.main_win.start()
 
@@ -36,7 +38,7 @@ class WhiteBoxCore(WhiteBoxCommands):
 		self.main_win.menu_bar.add_cascade(label="File", menu=self.main_win.open_menu)
 		self.main_win.menu_bar.add_cascade(label="Database", menu=self.main_win.database_menu)
 		
-		self.main_win.open_menu.add_command(label="Open project", command=lambda: self.open_project(None))
+		self.main_win.open_menu.add_command(label="Open project", command=lambda: self.open_project_click(None))
 		self.main_win.database_menu.add_command(label="Download database", command=self.download_database)
 
 	def bind_commands(self): # связывание окон и фреймов с командами
@@ -44,5 +46,8 @@ class WhiteBoxCore(WhiteBoxCommands):
 		tree.bind("<Double-Button-1>", self.hierarchy_click)
 		tree = self.main_win.file_info_frame.info_tree
 		tree.bind("<Double-Button-1>", self.file_info_click)
+		notebook = self.main_win.files_frame.notebook
+		notebook.bind("<Button-1>", lambda e: self.files_tab_click(e))
+		self.main_win.file_dependency_frame.zoom_btn.bind("<Button-1>", self.maximize_file_dependencies)
 
 	

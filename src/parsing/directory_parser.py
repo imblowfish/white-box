@@ -6,8 +6,8 @@ def check_path(path):
 # получение списка файлов и поддиректорий в директории
 def list_in_dir(dir_path):
 	return os.listdir(dir_path)
-def get_path_from(project_dir, name):
-	tree = get_dir_tree(project_dir)
+def path_from_dir_to_file(project_dir, name):
+	tree = dir_tree(project_dir)
 	for item in tree:
 		for project_dir in item[1]:
 			if project_dir == name:
@@ -15,16 +15,9 @@ def get_path_from(project_dir, name):
 		for file in item[2]:
 			if file == name:
 				return item[0]+'\\'+name
-	return ""
-import json
-def create_index(path):
-	os.mkdir(path)
-	data = {}
-	data["modules"] = []
-	with open(path+"/index.json", "w") as file:
-		json.dump(data, file)
+	return None
 # иерархия директории
-def get_dir_tree(dir_path):
+def dir_tree(dir_path):
 	tree = os.walk(dir_path)
 	return tree
 def relative_path_to(dir_path):

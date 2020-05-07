@@ -34,7 +34,7 @@ class ServerSearcher:
 		return None
 	
 	# поиск в сети интернет
-	def search_on_net(self, id_name):
+	def open_in_browser(self, id_name):
 		try:
 			query = f"https://www.google.com/search?q={id_name}"
 			webbrowser.open(query)
@@ -43,7 +43,7 @@ class ServerSearcher:
 			return False
 		return True
 		
-	def search(self, id_name):
+	def search_id(self, id_name):
 		res = self.search_on_local_database(id_name)
 		if res:
 			return ("local", res)
