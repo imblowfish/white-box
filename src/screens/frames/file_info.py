@@ -18,6 +18,8 @@ class FileInfoFrame(BaseFrame):
 	classes = None
 	funcs = None
 	enums = None
+	select_color = "#b6c4db"
+	bg_color = "white"
 		
 	def init_widgets(self):
 		style = ttk.Style()
@@ -30,15 +32,33 @@ class FileInfoFrame(BaseFrame):
 		self.info_tree["yscrollcommand"] = yscroll.set
 		self.info_tree["xscrollcommand"] = xscroll.set
 		
-		self.info_tree.place(relx=0, rely=0, relwidth=1, relheight=0.93)
+		self.info_tree.tag_configure("selected", background=self.select_color)
+		self.info_tree.tag_configure("unselected", background=self.bg_color)
+		
+		self.info_tree.place(relx=0, rely=0, relwidth=1, relheight=0.95)
 		yscroll.place(relx=0.93, rely=0, relwidth=0.07, relheight=1)
-		xscroll.place(relx=0, rely=0.93, relwidth=1, relheight=0.07)
+		xscroll.place(relx=0, rely=0.95, relwidth=0.93, relheight=0.05)
+		
+	def bind_commands(self):
+		self.info_tree.bind("<Button-1>", self.select_row)
+		self.info_tree.bind("<FocusOut>", lambda e: self.reset_selection())
+		
+	def select_row(self, event):
+		self.reset_selection()
+		item_id = self.info_tree.identify("item", event.x, event.y)
+		self.info_tree.item(item_id, tags=("selected"))
+		
+	def reset_selection(self, child=""):
+		for child in self.info_tree.get_children(child):
+			self.info_tree.item(child, tags=("unselected"))
+			self.reset_selection(child)
 	
 	def show(self, record, id_table):
 		self.clear()
 		self.init_nodes()
 		self.add_parents(record.parents_id, id_table)
 		self.add_members(record.members_id, id_table)
+		self.reset_selection()
 	
 	def clear(self):
 		if not self.info_tree:

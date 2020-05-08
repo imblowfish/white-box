@@ -6,6 +6,8 @@ from .project_tree.project_tree import ProjectTree
 # отображение иерархии проекта
 class HierarchyFrame(BaseFrame):
 	tree_widget = None # виджет treeview для отображения иерархии
+	select_color = "#b6c4db"
+	bg_color = "white"
 
 	def init_widgets(self): # инициализация виджетов
 		style = ttk.Style()
@@ -19,14 +21,29 @@ class HierarchyFrame(BaseFrame):
 		xscroll = tk.Scrollbar(self, command=self.tree_widget.xview, orient="horizontal")
 		self.tree_widget["yscrollcommand"] = yscroll.set
 		self.tree_widget["xscrollcommand"] = xscroll.set
-		
-		
+        
+		self.tree_widget.tag_configure("selected", background=self.select_color)
+		self.tree_widget.tag_configure("unselected", background=self.bg_color)
+
 		# размещение
-		self.tree_widget.place(relx=0, rely=0, relwidth=1, relheight=0.93)
+		self.tree_widget.place(relx=0, rely=0, relwidth=1, relheight=0.95)
 		yscroll.place(relx=0.93, rely=0, relwidth=0.07, relheight=1)
-		xscroll.place(relx=0, rely=0.93, relwidth=1, relheight=0.07)
+		xscroll.place(relx=0, rely=0.95, relwidth=0.93, relheight=0.05)
+	
+	def bind_commands(self):
+		self.tree_widget.bind("<Button-1>", self.select_row)
+		self.tree_widget.bind("<FocusOut>", lambda e: self.reset_selection())
 		
+	def select_row(self, event):
+		self.reset_selection()
+		item_id = self.tree_widget.identify("item", event.x, event.y)
+		self.tree_widget.item(item_id, tags=("selected"))
 		
+	def reset_selection(self, child=""):
+		for child in self.tree_widget.get_children(child):
+			self.tree_widget.item(child, tags=("unselected"))
+			self.reset_selection(child)
+	
 	def get_name(self, event):
 		return self.tree_widget.item(self.tree_widget.identify("item", event.x, event.y), "text")
 	
@@ -38,6 +55,7 @@ class HierarchyFrame(BaseFrame):
 		tree.create(hierarchy)
 		# заносим каждый узел в treeview
 		self.add_nodes(tree.root_elements)
+		self.reset_selection()
 
 	def clear(self): # очистка treeview
 		if not self.tree_widget:

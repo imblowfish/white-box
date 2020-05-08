@@ -26,9 +26,9 @@ class MainWindow:
 
 	def init_frames(self): # инициализация фреймов
 		# создаем фрейм иерархии проекта
-		self.hierarchy_frame = HierarchyFrame(self.master, width=0.2, height=0.5)	
+		self.hierarchy_frame = HierarchyFrame(self.master, width=0.2, height=0.7)	
 		# фрейм отображения зависимостей файлов между собой
-		self.file_dependency_frame = FileDependenciesFrame(self.master, y=0.5, width=0.2, height=0.5)
+		self.file_dependency_frame = FileDependenciesFrame(self.master, y=0.7, width=0.2, height=0.3)
 		# содежимого файлов
 		self.files_frame = FilesFrame(self.master, x=0.2, width=0.6)
 		# информации о файле
