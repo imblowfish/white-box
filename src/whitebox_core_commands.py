@@ -209,6 +209,7 @@ class WhiteBoxCommands:
 			return
 		mentions = sm.get_all_pos_in_dir(self.project_directory, name)
 		self.show_id_info(record, mentions)
+		
 	
 	
 		

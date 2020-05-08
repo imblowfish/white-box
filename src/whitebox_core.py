@@ -6,6 +6,7 @@
 import tkinter as tk
 from screens.windows import MainWindow
 from whitebox_core_commands import WhiteBoxCommands
+from utils.server_searcher import ServerSearcher
 
 # Класс корня проекта
 class WhiteBoxCore(WhiteBoxCommands):
@@ -39,6 +40,7 @@ class WhiteBoxCore(WhiteBoxCommands):
 		self.main_win.menu_bar.add_cascade(label="Database", menu=self.main_win.database_menu)
 		
 		self.main_win.open_menu.add_command(label="Open project", command=lambda: self.open_project_click(None))
+		self.main_win.database_menu.add_command(label="Search ID..", command=lambda: self.main_win.search_id(ServerSearcher(), self.run_html_viewer))
 		self.main_win.database_menu.add_command(label="Download database", command=self.download_database)
 
 	def bind_commands(self): # связывание окон и фреймов с командами

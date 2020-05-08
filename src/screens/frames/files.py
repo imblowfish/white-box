@@ -8,12 +8,15 @@ from .color.color_scheme import file_content_color_scheme as color_scheme
 from .color.color_scheme import file_content_select_bg as select_bg
 from .tokenizer.tokenizer import Tokenizer
 from math import *
+import re
 
 # отображение текста файла
 class FileContentFrame(BaseFrame):
 	text = None # виджет отображения текста
 	file_path = None # путь до файла
 	file_name = None
+	selection_pos = "1.0"
+	search_color = "#9ed9ae"
 	
 	def __init__(self, master, file_name, file_path, command, x=0, y=0, width=1, height=1):
 		self.file_name = file_name
@@ -37,6 +40,8 @@ class FileContentFrame(BaseFrame):
 		
 		y_scroll = tk.Scrollbar(self, command=self.text.yview)
 		x_scroll = tk.Scrollbar(self, orient="horizontal", command=self.text.xview)
+		
+		self.text.tag_config("search", background = self.search_color)
 		
 		self.text["yscrollcommand"] = y_scroll.set
 		self.text["xscrollcommand"] = x_scroll.set
@@ -126,17 +131,52 @@ class FileContentFrame(BaseFrame):
 				return self.text.get(start, end)
 		return None
 		
+	def search(self, pattern):
+		self.text.tag_remove("search", "1.0", "end")
+		start = self.selection_pos
+		end = self.text.index(tk.END)
+		string = self.text.get(start, end)
+		if string:
+			last_end = "1.0"
+			match = re.search(pattern, string)
+			if match:
+				m_start = self.text.index("%s+%dc"%(start, match.start()))
+				m_end = self.text.index("%s+%dc" % (start, match.end()))
+				self.text.tag_add("search", m_start, m_end)
+				self.selection_pos = m_end
+				self.text.see(m_start)
+				return True
+			else:
+				self.selection_pos = "1.0"
+		return False
+
 # отображение открываемых пользователем файлов
 class FilesFrame(BaseFrame):
 	notebook = None
 	frames = None
-	
+	search_text = None
 	def init_widgets(self):
 		self.notebook = ttk.Notebook(self)
-		self.notebook.place(relx=0, rely=0, relwidth=1, relheight=1)
+		self.search_text = tk.StringVar()
+		self.search_entry = tk.Entry(self, textvariable=self.search_text)
+		self.search_entry.place(relx=0, rely=0, relwidth=0.5, relheight=0.03)
+		self.notebook.place(relx=0, rely=0.03, relwidth=1, relheight=0.97)
 		self.notebook.bind("<Button-3>", self.notebook_right_click)
 		self.frames = []
+	
+	def bind_commands(self):
+		self.search_entry.bind("<Return>", self.start_search)
 		
+	def start_search(self, event):
+		frame = self.get_current()
+		if not frame:
+			return
+		res = frame.search(self.search_text.get())
+		if not res:
+			label = tk.Label(self, justify=tk.LEFT, text="No results...", foreground="#c22e21", anchor="nw")
+			label.place(relx=0.5, rely=0, relwidth=0.4, relheight=0.03)
+			self.after(1000, label.place_forget)			
+	
 	def notebook_right_click(self, event):
 		if not len(self.notebook.tabs()):
 			return
@@ -178,4 +218,6 @@ class FilesFrame(BaseFrame):
 		return self.notebook.tab(clicked_tab, "text")
 		
 	def get_current(self):
+		if not len(self.notebook.tabs()):
+			return
 		return self.frames[ self.notebook.index("current") ]

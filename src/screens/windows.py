@@ -6,6 +6,7 @@ from .frames.file_info import FileInfoFrame
 from .frames.file_dependencies import FileDependenciesFrame
 from .frames.log import LogFrame
 from .frames.status_bar import StatusBarFrame
+from .frames.search_id import SearchIDFrame
 
 # класс главного окна
 class MainWindow:
@@ -47,6 +48,16 @@ class MainWindow:
 		
 	def stop_statusbar(self):
 		self.status_bar_frame.stop()
+		
+	def search_id(self, s_searcher, run_html):
+		win = tk.Toplevel()
+		win.title("ID searching")
+		win.geometry("200x100")
+		win.resizable(False, False)
+		s_frame = SearchIDFrame(win)
+		s_frame.init_searcher(s_searcher)
+		s_frame.init_run_html(run_html)
+		
 		
 
 #---MainWindow---
