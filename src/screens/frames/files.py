@@ -69,7 +69,9 @@ class FileContentFrame(BaseFrame):
 	
 	def show(self, id_table):
 		try:
-			file = codecs.open(self.file_path, "r", "utf_8_sig")
+			# file = codecs.open(self.file_path, "r", "utf_8_sig")
+			# file = codecs.open(file_path, "r", "utf_8_sig", errors="ignore")
+			file = codecs.open(self.file_path, "r")
 		except:
 			messagebox.showerror("Open file error", f"Can't open file {self.file_path}")
 			return False
@@ -107,7 +109,7 @@ class FileContentFrame(BaseFrame):
 	def specify(self, value, type, tokenizer, id_table):
 		if tokenizer.is_keyword(value):
 			return "keyword"
-		if type == "id":
+		if type == "id" and id_table:
 			if id_table.has_record_in_file(self.file_name, value):
 				return "id"
 			elif id_table.has_record(value):

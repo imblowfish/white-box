@@ -35,11 +35,14 @@ class WhiteBoxCore(WhiteBoxCommands):
 		# создание пунктов меню
 		self.main_win.open_menu = tk.Menu(self.main_win.menu_bar, tearoff = 0)
 		self.main_win.database_menu = tk.Menu(self.main_win.menu_bar, tearoff = 0)
+		self.main_win.settings_menu = tk.Menu(self.main_win.menu_bar, tearoff = 0)
 		
 		self.main_win.menu_bar.add_cascade(label="File", menu=self.main_win.open_menu)
 		self.main_win.menu_bar.add_cascade(label="Database", menu=self.main_win.database_menu)
 		
 		self.main_win.open_menu.add_command(label="Open project", command=lambda: self.open_project_click(None))
+		self.main_win.open_menu.add_command(label="Open file", command=lambda: self.open_file_click(None))
+		
 		self.main_win.database_menu.add_command(label="Search ID..", command=lambda: self.main_win.search_id(ServerSearcher(), self.run_html_viewer))
 		self.main_win.database_menu.add_command(label="Download database", command=self.download_database)
 

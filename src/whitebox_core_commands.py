@@ -20,6 +20,14 @@ class WhiteBoxCommands:
 		self.main_win.log("Generate documentation...")
 		# генерируем документацию проекта
 		doc_path = doxy.generate_doc(self.project_directory, self.out_doc_path)
+		if not doc_path:
+			messagebox.showerror(
+				"Generate documentation error", 
+				"Can't generate doxygen documentation"
+			)
+			return
+		# проверяет папку с документацией на пустоту
+		
 		self.main_win.log("Documentation generation success")
 		# получаем таблицу идентификаторов путем разбора документации doxygen
 		self.main_win.log("Parse identifiers")
@@ -56,7 +64,8 @@ class WhiteBoxCommands:
 			self.id_table
 		)
 		self.main_win.log(f"Show file info")
-		self.main_win.file_info_frame.show(record, self.id_table)
+		if record:
+			self.main_win.file_info_frame.show(record, self.id_table)
 		
 	def search_id(self, name):
 		self.main_win.log(f"Search {name} on local database and server...")
@@ -136,6 +145,16 @@ class WhiteBoxCommands:
 			return
 		self.show_hierarchy()
 		self.main_win.stop_statusbar()
+		
+	def open_file_click(self, event):
+		# узнаем у пользователя, какой файл открыть
+		file_path = dir_par.relative_path_to( tk.filedialog.askopenfilename() )
+		if not file_path:
+			return
+		self.main_win.start_statusbar()
+		self.main_win.log(f"Open file {file_path}...")
+		self.main_win.stop_statusbar()
+		self.show_file(file_path, file_path, None)
 	
 	def maximize_file_dependencies(self, event):
 		if not self.id_table:
@@ -176,6 +195,9 @@ class WhiteBoxCommands:
 		# вывод информации об идентификаторе
 		name = self.remove_spaces( self.main_win.files_frame.get_current().get_word_under(event, text_tag) )
 		if not len(name):
+			return
+		if not self.id_table:
+			self.search_id(name)
 			return
 		record = self.id_table.get_record_by_name(name, copy=True)
 		path = dir_par.path_from_dir_to_file(self.project_directory, name)

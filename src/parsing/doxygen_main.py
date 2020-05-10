@@ -9,6 +9,20 @@ from .doxygen_parser import (
 	ClassParser
 )
 
+def get_doxygen_path():
+	try:
+		file = open("./conf/settings", "r")
+	except:
+		print("Error with open settings file")
+		return ""
+	for line in file:
+		if line.find("doxygen_path") >= 0:
+			path = line.split('=')
+			file.close()
+			return path[-1][:-1]
+	file.close()
+	return ""
+
 # генерация xml doxygen на основе проекта
 def generate_doc(project_path, doc_folder):
 	print("generate doxygen documentation")
@@ -17,6 +31,9 @@ def generate_doc(project_path, doc_folder):
 	for i in range(0, 15):
 		folder_name += chr(randint(97, 122))
 	doc_folder += '/'+folder_name
+	doxy_path = get_doxygen_path()
+	if not len(doxy_path):
+		return None
 	#генерация документации doxygen
 	command = "( type doc & \
 				echo GENERATE_XML=YES \
@@ -25,7 +42,7 @@ def generate_doc(project_path, doc_folder):
 				& echo RECURSIVE=YES \
 				& echo INPUT="+project_path+" \
 				& echo OUTPUT_DIRECTORY = "+doc_folder+" ) \
-				| "+"doxygen"+" - "
+				| "+doxy_path+" - "
 	try:
 		subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	except:

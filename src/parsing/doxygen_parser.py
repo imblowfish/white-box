@@ -22,9 +22,10 @@ class BaseXMLParser:
 	def parse(self, file_path): # разбор xml-файла
 		#получаем структуру xml файла
 		try:
-			tree = et.parse(file_path)
+			with open(file_path, "r") as xml_file:
+				tree = et.parse(file_path)
 		except:
-			print(f"BaseXMLParser: Something went wrong with parsing {file_path}")
+			print(f"{self.parser_name}: Something went wrong with parsing {file_path}")
 			return False
 		#получаем корень
 		self.root = tree.getroot()
@@ -51,7 +52,7 @@ class BaseXMLParser:
 
 # парсер файла index.xml вывода doxygen
 class IndexParser(BaseXMLParser):
-
+	parser_name = "IndexParser"
 	def parse_xml_node(self, node): # перегруженная функция разбора узла
 		# просматриваем каждый дочерний элемент узла
 		for child in node:
@@ -76,6 +77,7 @@ class IndexParser(BaseXMLParser):
 
 # парсер файлов xml связанных с исходными файлами проекта
 class SourceFileParser(BaseXMLParser):
+	parser_name = "SourceFileParser"
 	now_file = None # текущий разбираемый файл
 
 	def parse(self): # перегруженная функция разбора
@@ -114,10 +116,11 @@ class SourceFileParser(BaseXMLParser):
 			kind = node.attrib["kind"]
 			type = node[0].find("type")
 			# не у каждого элемента есть тип
-			if len(type) != 0:
-				type = type[0]
 			if type is not None:
+				if len(type) != 0:
+					type = type[0]
 				type = type.text
+			
 			# если не функция, то информации об имени и виде нам хватит
 			if kind != "func":
 				# добавляем запись, как члена файла
@@ -146,12 +149,14 @@ class SourceFileParser(BaseXMLParser):
 
 # парсер xml файлов классов проекта
 class ClassParser(BaseXMLParser):
+	parser_name = "ClassParser"
 	now_class = None # текущий разбираемый файл класса
 	
 	def parse(self):
 		# аналогично разбору файлов разбираем каждый файл класса
 		classes = self.doxy_table.get_records_by_kind("class")
 		for self.now_class in classes:
+			# print(self.now_class.ref)
 			super().parse(self.now_class.ref)
 		self.now_class = None
 		return True
@@ -160,7 +165,8 @@ class ClassParser(BaseXMLParser):
 		# получаем список классов класса
 		inner_classes = node[0].findall("innerclass")
 		# родителей класса
-		base_classes = node[0].findall("basecompounddef")
+		base_classes = node[0].findall("basecompoundref") 
+		# print(base_classes)
 		# и членов класса
 		members = node[0].findall("sectiondef")
 		# узнаем идентификатор записи класса в таблице идентификаторов

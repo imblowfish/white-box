@@ -47,21 +47,21 @@ class IDTableRecord:
 
 	def add_base(self, base_id): # добавление базового класса
 		# аналогично предыдущей функции
-		if not self.bases:
-			self.bases = []
+		if not self.bases_id:
+			self.bases_id = []
 		for id in self.bases_id:
 			if id == base_id:
 				return
-		self.bases.append(base_id)
+		self.bases_id.append(base_id)
 
 	def add_inheritor(self, inheritor_id): # добавление наследника класса
 		# аналогично предыдущей функции
-		if not self.inheritors:
-			self.inheritors = []
-		for id in self.inheritors:
+		if not self.inheritors_id:
+			self.inheritors_id = []
+		for id in self.inheritors_id:
 			if id == inheritor_id:
 				return
-		self.inheritors.append(inheritor_id)
+		self.inheritors_id.append(inheritor_id)
 		
 	def __str__(self):
 		info = ""
@@ -168,7 +168,7 @@ class IDTable:
 		return -1
 		
 	def has_record_in_file(self, file, name):
-		record = self.get_record_by_name_and_kind(file, "file")
+		record = self.get_record_by_name(name)
 		if not record:
 			return False
 		return self.search_child_in_record(record, name)

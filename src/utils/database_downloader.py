@@ -3,11 +3,28 @@ import os
 from .zip_worker import ZipWorker
 
 class DatabaseDownloader:
-	host = "127.0.0.1"
-	port = 8080
+	# host = "127.0.0.1"
+	# port = 8080
 	output_dir = "."
 	database_name = "database.zip"
-	url = f"http://{host}:{port}/{database_name}"
+	# url = f"http://{host}:{port}/{database_name}"
+	
+	def __init__(self):
+		self.set_host_and_port()
+		
+	def set_host_and_port(self):
+		try:
+			file = open("./conf/settings", "r")
+		except:
+			print("Can't find settings file")
+			return
+		for line in file:
+			if line.find("host") >= 0:
+				self.host = line.split('=')[-1]
+			elif line.find("port") >= 0:
+				self.port = int(line.split('=')[-1])
+		self.url = f"http://{self.host}:{self.port}/{self.database_name}"
+		file.close()
 	
 	def download(self, unzip=False):
 		path = f"{self.output_dir}/{self.database_name}"

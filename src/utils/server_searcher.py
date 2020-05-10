@@ -10,6 +10,22 @@ class ServerSearcher:
 	local_database_path = f"./database"
 	path_for_minibrowser = "../../"
 	
+	def __init__(self):
+		self.set_host_and_port()
+				
+	def set_host_and_port(self):
+		try:
+			file = open("./conf/settings", "r")
+		except:
+			print("Can't find settings file")
+			return
+		for line in file:
+			if line.find("host") >= 0:
+				self.host = line.split('=')[-1]
+			elif line.find("port") >= 0:
+				self.port = int(line.split('=')[-1])
+		file.close()
+		
 	def search_on_server(self, host, port, id_name):
 		if len(id_name) == 0:
 			print("id_name len:0")

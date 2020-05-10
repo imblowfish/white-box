@@ -6,7 +6,7 @@ class DependencyTree:
 	save_path = None
 	width = 500
 	height = 500
-	icon_size = 40
+	icon_size = 20
 	font = "./conf/open-sans/OpenSans-Light.ttf"
 	name_font = ImageFont.truetype(font, 15)
 	connect_font = ImageFont.truetype(font, 10)
@@ -61,9 +61,14 @@ class DependenciesDrawer:
 	connections = {
 		"file in file": "include",
 		"class in file": "inner",
+		"class in class": "member",
 		"function in file": "inner",
+		"var in file": "inner",
 		"enum in file": "inner",
 		"function in class": "member",
+		"variable in class": "member",
+		"enum in class": "member",
+		"class in class inh": "inheritor"
 	}
 	def __init__(self, gen_path):
 		self.dep_tree = DependencyTree(gen_path)
@@ -85,16 +90,36 @@ class DependenciesDrawer:
 		
 	def draw_level(self, record, id_table, layer=1, num=0, layer_size=1):
 		self.dep_tree.draw_node(record, layer, num, layer_size)
-		if not record.parents_id:
+		if not record.parents_id and not record.bases_id:
 			return
-		parents = []
-		for id in record.parents_id:
-			parents.append(id_table.get_record_by_id(id))
-		for i, parent in enumerate(parents):
-			self.draw_level(parent, id_table, layer+1, i, len(parents))
-			try:
-				con_type = self.connections[f"{record.kind} in {parent.kind}"]
-			except:
-				print(f"Index error in dep_drawer connections {record.kind} in {parent.kind}")
-				input()
-			self.dep_tree.connect((layer, num, layer_size), (layer+1, i, len(parents)), con_type)
+		parents_cnt = 0
+		if record.parents_id:
+			parents_cnt += len(record.parents_id)
+		bases_cnt = 0
+		if record.bases_id:
+			bases_cnt += len(record.bases_id)
+		sum_size = parents_cnt + bases_cnt
+		if record.parents_id:
+			parents = []
+			for id in record.parents_id:
+				parents.append(id_table.get_record_by_id(id))
+			for i, parent in enumerate(parents):
+				self.draw_level(parent, id_table, layer+1, i, sum_size)
+				try:
+					con_type = self.connections[f"{record.kind} in {parent.kind}"]
+				except:
+					print(f"Index error in dep_drawer connections {record.kind} in {parent.kind}")
+					input()
+				self.dep_tree.connect((layer, num, layer_size), (layer+1, i, sum_size), con_type)
+		if record.bases_id:
+			bases = []
+			for id in record.bases_id:
+				bases.append(id_table.get_record_by_id(id))
+			for i, base in enumerate(bases):
+				self.draw_level(base, id_table, layer+1, parents_cnt+i, sum_size)
+				try:
+					con_type = self.connections[f"{record.kind} in {base.kind} inh"]
+				except:
+					print(f"Index error in dep_drawer connections {record.kind} in {base.kind}")
+					input()
+				self.dep_tree.connect((layer, num, layer_size), (layer+1, parents_cnt+i, sum_size), con_type)

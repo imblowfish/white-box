@@ -1,3 +1,4 @@
+import codecs
 class HTMLGenerator:
 	output_path = None
 
