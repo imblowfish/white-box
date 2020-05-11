@@ -24,30 +24,38 @@ class DependencyTree:
 		print("save")
 		self.image.save(self.save_path)
 	
-	def draw_node(self, record, layer, num, layer_size):
+	def draw_node(self, record, layer, layer_size):
 		step_x = float(self.width) / (layer_size+1)
+		num = layer_size - self.levels[layer]
 		x1 = (num+1) * step_x
 		y1 = (self.depth - layer) * self.step_y + self.icon_size
 		x2 = x1 + self.icon_size
 		y2 = y1 + self.icon_size
-		self.draw.line((x1, y1, x2, y1), fill="black", width=2)
-		self.draw.line((x1, y2, x2, y2), fill="black", width=2)
+		if layer == 0:
+			self.draw.line((x1, y1, x2, y1), fill="red", width=2)
+			self.draw.line((x1, y2, x2, y2), fill="red", width=2)
+		else:
+			self.draw.line((x1, y1, x2, y1), fill="black", width=2)
+			self.draw.line((x1, y2, x2, y2), fill="black", width=2)
 		
 		w, h = self.draw.textsize(f"{record.name}", font=self.name_font)
 		text_x = (x1+x2)/2 - w/2
 		text_y = (y1+y2)/2 - h/2
 		self.draw.text((text_x, text_y), f"{record.name}", font=self.name_font, fill="black")
+		self.levels[layer] -= 1
 
 	def connect(self, node1, node2, connection_type):
 		layer, num, layer_size = node1
 		step_x = float(self.width) / (layer_size+1)
 		x1 = (num+1) * step_x + self.icon_size/2
 		y1 = (self.depth - layer) * self.step_y + self.icon_size
-		
-		layer, num, layer_size = node2
+
+		layer, layer_size = node2
+		num = layer_size - self.c_levels[layer]
 		step_x = float(self.width) / (layer_size+1)
 		x2 = (num+1) * step_x + self.icon_size/2
 		y2 = (self.depth - layer) * self.step_y + 2*self.icon_size
+		self.c_levels[layer] -=1
 		self.draw.line((x1, y1, x2, y2), fill="black")
 		
 		w, h = self.draw.textsize(connection_type, font=self.connect_font)
@@ -80,7 +88,8 @@ class DependenciesDrawer:
 		self.dep_tree.set_depth( self.calculate_depth(record, id_table) )
 		self.levels = [0] * self.dep_tree.depth
 		self.calculate_num_on_layers(record, id_table)
-		self.dep_tree.levels = self.levels
+		self.dep_tree.levels = self.levels.copy()
+		self.dep_tree.c_levels = self.levels.copy()
 		self.draw_level(record, id_table)
 		self.dep_tree.save()
 		
@@ -105,8 +114,7 @@ class DependenciesDrawer:
 		
 	def draw_level(self, record, id_table, layer=0, num=0):
 		l_size = self.levels[layer]
-		print(l_size, num)
-		self.dep_tree.draw_node(record, layer, num, l_size)
+		self.dep_tree.draw_node(record, layer, l_size)
 		if not record.parents_id:
 			return
 		for i, id in enumerate(record.parents_id):
@@ -117,7 +125,7 @@ class DependenciesDrawer:
 			except:
 				print(f"Index error in dep_drawer connections {record.kind} in {parent.kind}")
 			next_l_size = self.levels[layer+1]
-			self.dep_tree.connect((layer, num, l_size), (layer+1, i, next_l_size), con_type)
+			self.dep_tree.connect((layer, num, l_size), (layer+1, next_l_size), con_type)
 		# if not record.parents_id and not record.bases_id:
 			# return
 		# parents_cnt = 0
