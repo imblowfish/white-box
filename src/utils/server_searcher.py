@@ -21,7 +21,7 @@ class ServerSearcher:
 			return
 		for line in file:
 			if line.find("host") >= 0:
-				self.host = line.split('=')[-1]
+				self.host = line.split('=')[-1][:-1]
 			elif line.find("port") >= 0:
 				self.port = int(line.split('=')[-1])
 		file.close()

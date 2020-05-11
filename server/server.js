@@ -34,6 +34,7 @@ function main(req, res){
 		for(let i=0; i<grab_names.length; i++){
 			let dir_path = database + '/' + grab_names[i] + "/pages";
 			list = fs.readdirSync(dir_path);
+			console.log(list);
 			if(list.indexOf(file_name) >= 0){
 				file_path = dir_path+"/"+file_name;
 				last_dir = database + '/' + grab_names[i];

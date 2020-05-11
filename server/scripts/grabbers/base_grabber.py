@@ -3,6 +3,7 @@ import json
 import time
 import os
 import random
+import codecs
 
 class BaseGrabber:
 	header = f"\
@@ -33,12 +34,13 @@ class BaseGrabber:
 		return True
 			
 	def save_html(self, path, ident_name, data):
-		try:
-			with open(f"{path}/pages/{ident_name}.html", "w") as file:
-				file.write(self.header % str(data))
-		except:
-			print(f"Error with writing html {ident_name}")
-			return False
+		print(f"Try save in {path}/pages/{ident_name}")
+		# try:
+		with codecs.open(f"{path}/pages/{ident_name}.html", "w", "utf8") as file:
+			file.write(self.header % str(data))
+		# except:
+			# print(f"Error with writing html {ident_name}")
+			# return False
 		return True
 
 	def has_ident(self, ident_name):
@@ -57,11 +59,11 @@ class BaseGrabber:
 				print(f"Error with parsing page {key}")
 				return
 			print(f"Parsing {key} ended")
-			time.sleep(random.randint(2, 30))
+			# time.sleep(random.randint(2, 30))
 		return True
 			
 	def parse_idents_list(self, path):
 		pass
 		
-	def parse_page(self, path, ident_name, url):
+	def parse_page(self, path, ident_name):
 		pass

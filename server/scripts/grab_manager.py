@@ -46,6 +46,7 @@ class GrabManager:
 						"last_update": f"{now.day}-{now.month}-{now.year} {now.hour}.{now.minute}.{now.second}",
 						"update_after_days": update_days
 					}
+		self.save_data(self.grabbers_info)
 		
 	def init_grabber_dir(self, grabber_name):
 		os.mkdir(f"{self.database_dir}/{grabber_name}")
@@ -70,15 +71,15 @@ class GrabManager:
 		if len(update_list) == 0:
 			print("Nothing update")
 			return
-		# for grab_name in update_list:
-			# print(f"Updating {grab_name}...")
-			# command = f"python {self.grab_dir}/{grab_name}.py"
-			# subprocess.run(command, shell=True)
-			# now = datetime.datetime.now()
-			# self.grabbers_info[grab_name]["last_update"] = f"{now.day}-{now.month}-{now.year} {now.hour}.{now.minute}.{now.second}"
-			# print(f"Updating {grab_name} done")
-		# self.save_data(self.grabbers_info)
-		# print(f"Grabber {grabber_name} added")
+		for grab_name in update_list:
+			print(f"Updating {grab_name}...")
+			command = f"python {self.grab_dir}/{grab_name}.py"
+			subprocess.run(command, shell=True)
+			now = datetime.datetime.now()
+			self.grabbers_info[grab_name]["last_update"] = f"{now.day}-{now.month}-{now.year} {now.hour}.{now.minute}.{now.second}"
+			print(f"Updating {grab_name} done")
+		self.save_data(self.grabbers_info)
+		print(f"Grabber {grabber_name} added")
 		print("Create database archive")
 		zw = ZipWorker()
 		zw.zip_dir(self.database_dir, f"{self.output_dir}/{self.local_database_name}")

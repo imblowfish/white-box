@@ -69,15 +69,31 @@ class FileContentFrame(BaseFrame):
 	
 	def show(self, id_table):
 		try:
-			# file = codecs.open(self.file_path, "r", "utf_8_sig")
+			file = codecs.open(self.file_path, "r", "utf_8_sig")
 			# file = codecs.open(file_path, "r", "utf_8_sig", errors="ignore")
-			file = codecs.open(self.file_path, "r")
+			# file = codecs.open(self.file_path, "r")
 		except:
 			messagebox.showerror("Open file error", f"Can't open file {self.file_path}")
 			return False
 		self.text.config(state=tk.NORMAL)
 		self.text.delete(1.0, tk.END)
-		self.highlight(file, id_table)
+		try:
+			self.highlight(file, id_table)
+		except:
+			try:
+				file = codecs.open(self.file_path, "r")
+				# file = codecs.open(file_path, "r", "utf_8_sig", errors="ignore")
+				# file = codecs.open(self.file_path, "r")
+			except:
+				messagebox.showerror("Open file error", f"Can't open file {self.file_path}")
+				return False
+			self.text.config(state=tk.NORMAL)
+			self.text.delete(1.0, tk.END)
+			try:
+				self.highlight(file, id_table)
+			except:
+				messagebox.showerror("Codec error", f"Can't open file {self.file_path}")
+				return False
 		file.close()
 		self.text.config(state=tk.DISABLED)
 		return True
