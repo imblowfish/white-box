@@ -202,10 +202,10 @@ class WhiteBoxCommands:
 		record = self.id_table.get_record_by_name(name, copy=True)
 		path = dir_par.path_from_dir_to_file(self.project_directory, name)
 		if not record:
-			print("Can't find path")
+			print("Can't find record")
 			self.search_id(name)
 			return
-		if not record.parents_id:
+		if not record.parents_id and record.kind == "file":
 			# делаем open file
 			if path:
 				self.show_file(name, path, record)

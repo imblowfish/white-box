@@ -106,26 +106,38 @@ class DependenciesDrawer:
 		
 	def calculate_num_on_layers(self, record, id_table, layer=0):
 		self.levels[layer] += 1
-		if not record.parents_id:
-			return
-		for id in record.parents_id:
-			parent = id_table.get_record_by_id(id)
-			self.calculate_num_on_layers(parent, id_table, layer+1)
-		
+		if record.parents_id:
+			for id in record.parents_id:
+				parent = id_table.get_record_by_id(id)
+				self.calculate_num_on_layers(parent, id_table, layer+1)
+		if record.bases_id:
+			for id in record.bases_id:
+				base = id_table.get_record_by_id(id)
+				self.calculate_num_on_layers(base, id_table, layer+1)
+				
 	def draw_level(self, record, id_table, layer=0, num=0):
 		l_size = self.levels[layer]
 		self.dep_tree.draw_node(record, layer, l_size)
-		if not record.parents_id:
-			return
-		for i, id in enumerate(record.parents_id):
-			parent = id_table.get_record_by_id(id)
-			self.draw_level(parent, id_table, layer+1, i)
-			try:
-				con_type = self.connections[f"{record.kind} in {parent.kind}"]
-			except:
-				print(f"Index error in dep_drawer connections {record.kind} in {parent.kind}")
-			next_l_size = self.levels[layer+1]
-			self.dep_tree.connect((layer, num, l_size), (layer+1, next_l_size), con_type)
+		if record.parents_id:
+			for i, id in enumerate(record.parents_id):
+				parent = id_table.get_record_by_id(id)
+				self.draw_level(parent, id_table, layer+1, i)
+				try:
+					con_type = self.connections[f"{record.kind} in {parent.kind}"]
+				except:
+					print(f"Index error in dep_drawer connections {record.kind} in {parent.kind}")
+				next_l_size = self.levels[layer+1]
+				self.dep_tree.connect((layer, num, l_size), (layer+1, next_l_size), con_type)
+		if record.bases_id:
+			for i, id in enumerate(record.bases_id):
+				base = id_table.get_record_by_id(id)
+				self.draw_level(base, id_table, layer+1, i)
+				try:
+					con_type = self.connections[f"{record.kind} in {base.kind} inh"]
+				except:
+					print(f"Index error in dep_drawer connections {record.kind} in {base.kind} inh")
+				next_l_size = self.levels[layer+1]
+				self.dep_tree.connect((layer, num, l_size), (layer+1, next_l_size), con_type)
 		# if not record.parents_id and not record.bases_id:
 			# return
 		# parents_cnt = 0
