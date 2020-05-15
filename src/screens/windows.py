@@ -7,6 +7,7 @@ from .frames.file_dependencies import FileDependenciesFrame
 from .frames.log import LogFrame
 from .frames.status_bar import StatusBarFrame
 from .frames.search_id import SearchIDFrame
+from .frames.module_editor import ModuleEditor
 
 # класс главного окна
 class MainWindow:
@@ -57,6 +58,13 @@ class MainWindow:
 		s_frame = SearchIDFrame(win)
 		s_frame.init_searcher(s_searcher)
 		s_frame.init_run_html(run_html)
+		
+	def text_in_module_adding(self, text=None):
+		win = tk.Toplevel()
+		win.title("ID searching")
+		win.geometry("500x400")
+		module_editor = ModuleEditor(win)
+		module_editor.show(text)
 		
 		
 

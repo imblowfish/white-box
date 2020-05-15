@@ -18,7 +18,7 @@ class FileContentFrame(BaseFrame):
 	selection_pos = "1.0"
 	search_color = "#9ed9ae"
 	
-	def __init__(self, master, file_name, file_path, command, x=0, y=0, width=1, height=1):
+	def __init__(self, master, file_name, file_path, command, right_command, x=0, y=0, width=1, height=1):
 		self.file_name = file_name
 		self.file_path = file_path
 		super().__init__(master, x, y, width, height)
@@ -33,6 +33,7 @@ class FileContentFrame(BaseFrame):
 			self.text.tag_bind(key, "<Enter>", self.on_enter)
 			self.text.tag_bind(key, "<Leave>", self.on_leave)
 		self.text.bind("<Control-MouseWheel>", self.resize)
+		self.text.bind("<Button-3>", right_command)
 			
 	def init_widgets(self):
 		self.font = tkFont.Font(family=None, size=8)
@@ -167,12 +168,20 @@ class FileContentFrame(BaseFrame):
 			else:
 				self.selection_pos = "1.0"
 		return False
+		
+	def selected_text(self):
+		try:
+			text = self.text.selection_get()
+		except:
+			return None
+		return text
 
 # отображение открываемых пользователем файлов
 class FilesFrame(BaseFrame):
 	notebook = None
 	frames = None
 	search_text = None
+	now_frame = None
 	def init_widgets(self):
 		self.notebook = ttk.Notebook(self)
 		self.search_text = tk.StringVar()
@@ -212,7 +221,7 @@ class FilesFrame(BaseFrame):
 		for tab in self.notebook.tabs():
 			self.notebook.forget(tab)
 			
-	def open_file(self, file_name, file_path, content_click, id_table):
+	def open_file(self, file_name, file_path, content_click, right_content_click, id_table):
 		for i in self.notebook.tabs():
 			if self.notebook.tab(i, "text") == file_name:
 				self.notebook.select(i)
@@ -220,7 +229,7 @@ class FilesFrame(BaseFrame):
 		tab_names = [self.notebook.tab(i, "text") for i in self.notebook.tabs()]
 		if file_name in tab_names:
 			return
-		frame = FileContentFrame(self.notebook, file_name, file_path, content_click)
+		frame = FileContentFrame(self.notebook, file_name, file_path, content_click, right_content_click)
 		if not frame.show(id_table):
 			return
 		self.notebook.add(frame, text=file_name)
@@ -235,6 +244,10 @@ class FilesFrame(BaseFrame):
 			return
 		return self.notebook.tab(clicked_tab, "text")
 		
+	def get_selected_text(self):
+		frame = self.get_current()
+		return frame.selected_text()
+	
 	def get_current(self):
 		if not len(self.notebook.tabs()):
 			return

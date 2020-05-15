@@ -4,18 +4,18 @@ class HTMLGenerator:
 
 	document="\
 	<!DOCTYPE html>\
-	<head>\
-	<link rel='stylesheet' type='text/css' href='../styles/style.css'>\
-	<title>%s</title>\
-	</head>\
-	<body>\
-	<div class='dep_image'>\
-	<img src='deps.png'>\
-	</div>\
-	<div class='header'>%s</div>\
-	<div class='members'>%s</div>\
-	<div class='mentions'>%s</div>\
-	</body>\
+		<head>\
+			<link rel='stylesheet' type='text/css' href='../styles/style.css'>\
+			<title>%s</title>\
+		</head>\
+		<body>\
+			<div class='dep_image'>\
+			<img src='deps.png'>\
+		</div>\
+			<div class='header'>%s</div>\
+			<div class='members'>%s</div>\
+			<div class='mentions'>%s</div>\
+		</body>\
 	<html>"
 	
 	member_info="<div class='member'>%s</div>"

@@ -61,6 +61,7 @@ class WhiteBoxCommands:
 			name, 
 			path, 
 			self.file_content_click, 
+			self.file_content_right_click,
 			self.id_table
 		)
 		self.main_win.log(f"Show file info")
@@ -232,7 +233,16 @@ class WhiteBoxCommands:
 		mentions = sm.get_all_pos_in_dir(self.project_directory, name)
 		self.show_id_info(record, mentions)
 		
+	def file_content_right_click(self, event):
+		popup = tk.Menu(self.main_win.master, tearoff=0)
+		text = self.main_win.files_frame.get_selected_text()
+		if text:
+			popup.add_command(label="Add to module", command=lambda :self.add_to_module(text))
+		popup.add_command(label="Search...", command=lambda :self.main_win.search_id(ServerSearcher(), self.run_html_viewer))
+		popup.tk_popup(event.x_root, event.y_root, 0)
 	
+	def add_to_module(self, text):
+		self.main_win.text_in_module_adding(text)
 	
 		
 	

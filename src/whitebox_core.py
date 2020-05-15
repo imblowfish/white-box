@@ -39,6 +39,7 @@ class WhiteBoxCore(WhiteBoxCommands):
 		
 		self.main_win.menu_bar.add_cascade(label="File", menu=self.main_win.open_menu)
 		self.main_win.menu_bar.add_cascade(label="Database", menu=self.main_win.database_menu)
+		self.main_win.menu_bar.add_command(label="Modules...", command=self.main_win.text_in_module_adding)
 		
 		self.main_win.open_menu.add_command(label="Open project", command=lambda: self.open_project_click(None))
 		self.main_win.open_menu.add_command(label="Open file", command=lambda: self.open_file_click(None))
