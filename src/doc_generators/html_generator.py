@@ -69,11 +69,16 @@ class HTMLGenerator:
 			file_name = mentions[key]["name"]
 			content += mention_file % file_name
 			for mention in mentions[key]["lines"]:
-				content += mention_text%(mention[0], mention[1])
+				content += mention_text%(mention[0], mention[1].replace('<', '&lt;').replace('>', '&gt;'))
 			mention_content += self.mention_info % content
 			content = ""
 		# return self.mention_info % content
 		return mention_content
+		
+	def fix_str(self, str):
+		str.replace('<', "lt;")
+		str.replace('>', "gt;")
+		return str
 		
 	def record_to_html(self, member):
 		"""
@@ -81,13 +86,13 @@ class HTMLGenerator:
 		"""
 		str = ""
 		if member.kind:
-			str += f"<span class='kind'>{member.kind} </span>"
+			str += f"<span class='kind'>{member.kind.replace('<', '&lt;').replace('>', '&gt;')} </span>"
 		if member.modifier:
-			str += f"<span class='modifier'>{member.modifier} </span>"
+			str += f"<span class='modifier'>{member.modifier.replace('<', '&lt;').replace('>', '&gt;')} </span>"
 		if member.type:
-			str += f"<span class='type'>{member.type} </span>"
-		str += f"<span class='name'>{member.name}</span>"
+			str += f"<span class='type'>{member.type.replace('<', '&lt;').replace('>', '&gt;')} </span>"
+		str += f"<span class='name'>{member.name.replace('<', '&lt;').replace('>', '&gt;')}</span>"
 		if member.args:
-			str += f"<span class='args'>{member.args}</span>"
+			str += f"<span class='args'>{member.args.replace('<', '&lt;').replace('>', '&gt;')}</span>"
 		return str
 		

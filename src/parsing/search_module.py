@@ -1,7 +1,7 @@
 import codecs
 import re
 from . import directory_parser as dp
-
+from screens.frames.tokenizer.tokenizer import Tokenizer
 """
 	Модуль поиска упоминаний идентификатора в файлах проекта
 """
@@ -11,17 +11,33 @@ def get_all_pos_in_file(file_path, str):
 		Поиск упоминаний в файле
 	"""
 	try:
-		file = codecs.open(file_path, "r")
+		file = codecs.open(file_path, "r", "utf_8_sig")
 	except:
-		print(f"Something went wrong with open file {file_path} in search_module")
-		return
+		try:
+			file = codecs.open(self.file_path, "r")
+		except:
+			print(f"Something went wrong with open file {file_path} in search_module")
+			return
 	lines = []
-	line_num = 1
 	try:
-		for line in file:
-			if str in line:
-				lines.append((line_num, line))
-			line_num += 1
+		for num, line in enumerate(file):
+			tokenizer = Tokenizer()
+			t_value = ""
+			t_type = None
+			i = 0
+			while i < len(line):
+				t_value += line[i]
+				now_type = tokenizer.get_token_type(t_value)
+				if not now_type or i+1 == len(line):
+					if t_type:
+						if i+1 < len(line):
+							i -= 1
+							t_value = t_value[:-1]
+						if t_value == str:
+							lines.append((num+1, line))
+					t_value = ""
+				t_type = now_type
+				i+=1
 	except:
 		return 
 	finally:

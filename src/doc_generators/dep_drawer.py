@@ -12,8 +12,8 @@ class DependencyTree:
 	height = 500
 	icon_size = 20
 	font = "./conf/open-sans/OpenSans-Bold.ttf"
-	name_font = ImageFont.truetype(font, 12)
-	connect_font = ImageFont.truetype(font, 12)
+	name_font = ImageFont.truetype(font, 10)
+	connect_font = ImageFont.truetype(font, 10)
 	bg_color = "#3c3836"
 	font_color = "white"
 	line_color = "#83a598"
