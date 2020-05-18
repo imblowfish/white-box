@@ -6,12 +6,15 @@ from .project_tree.project_tree import ProjectTree
 # отображение иерархии проекта
 class HierarchyFrame(BaseFrame):
 	tree_widget = None # виджет treeview для отображения иерархии
-	select_color = "#b6c4db"
-	bg_color = "white"
+	font_select_color = "#3c3836"
+	select_color = "#f9f5f7"
+	font_color = "#f9f5f7"
+	bg_color = "#3c3836"
 
 	def init_widgets(self): # инициализация виджетов
-		style = ttk.Style()
-		style.configure("Treeview.Heading", font=(None, 7), align=tk.CENTER)
+		style = ttk.Style(self)
+		style.theme_use("clam")
+		style.configure("Treeview.Heading", font=(None, 8), align=tk.CENTER, background=self.bg_color, fieldbackground=self.bg_color, foreground=self.font_color)
 		# создание treeview
 		self.tree_widget = ttk.Treeview(self, style="Treeview.Heading")
 		# даем ему название
@@ -22,8 +25,8 @@ class HierarchyFrame(BaseFrame):
 		self.tree_widget["yscrollcommand"] = yscroll.set
 		self.tree_widget["xscrollcommand"] = xscroll.set
         
-		self.tree_widget.tag_configure("selected", background=self.select_color)
-		self.tree_widget.tag_configure("unselected", background=self.bg_color)
+		self.tree_widget.tag_configure("selected", background=self.select_color, foreground=self.font_select_color)
+		self.tree_widget.tag_configure("unselected", background=self.bg_color, foreground=self.font_color)
 
 		# размещение
 		self.tree_widget.place(relx=0, rely=0, relwidth=1, relheight=0.95)

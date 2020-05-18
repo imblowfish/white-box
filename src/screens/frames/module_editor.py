@@ -9,8 +9,10 @@ from doc_generators.module_generator import ModuleGenerator
 
 class ModuleTextFrame(BaseFrame):
 	text = None
+	font_color = "#f9f5f7"
+	bg_color = "#3c3836"
 	def init_widgets(self):
-		self.text = tk.Text(self, font=(None, 8))
+		self.text = tk.Text(self, font=(None, 8), bg="#bda993", fg="#3c3836")
 		self.text.place(relx=0, rely=0, relwidth=1, relheight=1)
 
 
@@ -19,16 +21,25 @@ class ModuleEditor(BaseFrame):
 	modules = None
 	module_file_path = "./temp/module.json"
 	now_selected = None
+	font_select_color = "#3c3836"
+	select_color = "#f9f5f7"
+	font_color = "#f9f5f7"
+	bg_color = "#3c3836"
 	
 	def init_widgets(self):
 		self.module_text_frame = ModuleTextFrame(self)
-		self.module_tree = ttk.Treeview(self)
+		self.module_tree = ttk.Treeview(self, style="Treeview.Heading")
 		self.module_tree.heading("#0", text="Modules")
-		self.add_button = tk.Button(self, text="Add", command=lambda: self.add_in_module(self.module_text_frame.text.get("1.0", tk.END)))
+		self.module_tree.tag_configure("selected", background=self.select_color, foreground=self.font_select_color)
+		self.module_tree.tag_configure("unselected", background=self.bg_color, foreground=self.font_color)
+
+		
+		self.add_button = tk.Button(self, text="Add", bg=self.bg_color, fg=self.font_color, command=lambda: self.add_in_module(self.module_text_frame.text.get("1.0", tk.END)))
 		yscroll = tk.Scrollbar(self, command=self.module_tree.yview)
 		xscroll = tk.Scrollbar(self, command=self.module_tree.xview, orient="horizontal")
 		self.module_tree["yscrollcommand"] = yscroll.set
 		self.module_tree["xscrollcommand"] = xscroll.set
+		
 		self.module_tree.place(relx=0, rely=0, relwidth=0.5, relheight=0.95)
 		yscroll.place(relx=0.5, rely=0, relwidth=0.07, relheight=1)
 		xscroll.place(relx=0, rely=0.95, relwidth=0.5, relheight=0.05)
@@ -45,21 +56,36 @@ class ModuleEditor(BaseFrame):
 		self.menu_bar.add_command(label="Export modules", command=self.export_modules)
 		
 	def bind_commands(self):
+		self.module_tree.bind("<FocusOut>", lambda e: self.reset_selection())
 		self.module_tree.bind("<Button-1>", self.select_module)
 		def after_close():
 			self.save_modules()
 			self.master.destroy()
 		self.bind("<Destroy>", lambda e: after_close())
 		
+	def select_row(self, event):
+		self.reset_selection()
+		item_id = self.module_tree.identify("item", event.x, event.y)
+		tags = self.module_tree.item(item_id)["tags"]
+		self.module_tree.item(item_id, tags=(tags[0], "selected"))
+		
+	def reset_selection(self, child=""):
+		for child in self.module_tree.get_children(child):
+			tags = self.module_tree.item(child)["tags"]
+			self.module_tree.item(child, tags=(tags[0], "unselected"))
+			self.reset_selection(child)
+		
 	def select_module(self, event):
 		if not self.modules:
 			self.now_selected = None
 			return
+		self.select_row(event)
 		item = self.module_tree.identify("item", event.x, event.y)
 		name = self.module_tree.item(item, "text")
 		tags = self.module_tree.item(item)["tags"]
 		if not len(name):
 			return
+		print(tags)
 		if not len(tags):
 			self.now_selected = None
 			return
@@ -68,7 +94,7 @@ class ModuleEditor(BaseFrame):
 			win = tk.Toplevel()
 			win.wm_title("Block content")
 			win.geometry("300x200")
-			text = tk.Text(win, font=(None, 8))
+			text = tk.Text(win, font=(None, 8), bg="#bda993", fg="#3c3836")
 			text.place(relx=0, rely=0, relwidth=1, relheight=1)
 			text.insert(tk.END, name)
 			self.now_selected = None
@@ -82,11 +108,13 @@ class ModuleEditor(BaseFrame):
 		win.wm_title("Add module")
 		win.geometry("300x200")
 		win.resizable(False, False)
-		text = tk.Entry(win)
-		descr = tk.Text(win)
-		button = tk.Button(win, text="Add")
-		text.place(relx=0, rely=0, relwidth=1, relheight=0.1)
-		descr.place(relx=0, rely=0.1, relwidth=1, relheight=0.7)
+		text = tk.Entry(win, bg="#3c3836", fg="#ebdbb2")
+		descr = tk.Text(win, bg="#3c3836", fg="#ebdbb2")
+		button = tk.Button(win, text="Add", bg="#f9f5f7", fg="#3c3836")
+		tk.Label(win, text="Module name", bg="#f9f5f7", fg="#3c3836").place(relx=0, rely=0, relwidth=1, relheight=0.1)
+		text.place(relx=0, rely=0.1, relwidth=1, relheight=0.1)
+		tk.Label(win, text="Description", bg="#f9f5f7", fg="#3c3836").place(relx=0, rely=0.2, relwidth=1, relheight=0.1)
+		descr.place(relx=0, rely=0.3, relwidth=1, relheight=0.5)
 		button.place(relx=0, rely=0.8, relwidth=1, relheight=0.2)
 		win.grab_set()
 		def add(text, descr, win):
@@ -154,13 +182,16 @@ class ModuleEditor(BaseFrame):
 		win.wm_title("Edit module")
 		win.geometry("300x200")
 		win.resizable(False, False)
-		text = tk.Entry(win)
+		
+		text = tk.Entry(win, bg="#3c3836", fg="#ebdbb2")
 		text.insert(tk.END, self.now_selected[0])
-		descr = tk.Text(win)
+		descr = tk.Text(win, bg="#3c3836", fg="#ebdbb2")
 		descr.insert(tk.END, self.modules[self.now_selected[0]]["description"])
-		button = tk.Button(win, text="Edit")
-		text.place(relx=0, rely=0, relwidth=1, relheight=0.1)
-		descr.place(relx=0, rely=0.1, relwidth=1, relheight=0.7)
+		button = tk.Button(win, text="Edit", bg="#3c3836", fg="#ebdbb2")
+		tk.Label(win, text="Module name", bg="#f9f5f7", fg="#3c3836").place(relx=0, rely=0, relwidth=1, relheight=0.1)
+		text.place(relx=0, rely=0.1, relwidth=1, relheight=0.1)
+		tk.Label(win, text="Description", bg="#f9f5f7", fg="#3c3836").place(relx=0, rely=0.2, relwidth=1, relheight=0.1)
+		descr.place(relx=0, rely=0.3, relwidth=1, relheight=0.7)
 		button.place(relx=0, rely=0.8, relwidth=1, relheight=0.2)
 		win.grab_set()
 		def edit(module_name, text, descr):

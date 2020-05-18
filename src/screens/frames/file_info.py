@@ -18,12 +18,15 @@ class FileInfoFrame(BaseFrame):
 	classes = None
 	funcs = None
 	enums = None
+	font_select_color = "#3c3836"
 	select_color = "#b6c4db"
-	bg_color = "white"
+	font_color = "#f9f5f7"
+	bg_color = "#3c3836"
 		
 	def init_widgets(self):
-		style = ttk.Style()
-		style.configure("Treeview.Heading", font=(None, 7), align=tk.CENTER)
+		# style = ttk.Style()
+		# style.theme_use("clam")
+		# style.configure("Treeview.Heading", font=(None, 8), align=tk.CENTER, background=self.bg_color, fieldbackground=self.bg_color, foreground=self.font_color)
 		self.info_tree = ttk.Treeview(self, style="Treeview.Heading")
 		self.info_tree.heading("#0", text="File info")
 		
@@ -32,8 +35,8 @@ class FileInfoFrame(BaseFrame):
 		self.info_tree["yscrollcommand"] = yscroll.set
 		self.info_tree["xscrollcommand"] = xscroll.set
 		
-		self.info_tree.tag_configure("selected", background=self.select_color)
-		self.info_tree.tag_configure("unselected", background=self.bg_color)
+		self.info_tree.tag_configure("selected", background=self.select_color, foreground=self.font_select_color)
+		self.info_tree.tag_configure("unselected", background=self.bg_color, foreground=self.font_color)
 		
 		self.info_tree.place(relx=0, rely=0, relwidth=1, relheight=0.95)
 		yscroll.place(relx=0.93, rely=0, relwidth=0.07, relheight=1)

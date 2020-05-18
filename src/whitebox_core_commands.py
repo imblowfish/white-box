@@ -213,6 +213,10 @@ class WhiteBoxCommands:
 			else:
 				self.search_id(name)
 			return
+		if record.kind == "file":
+			path = dir_par.path_from_dir_to_file(self.project_directory, name)
+			self.show_file(name, path, record)
+			return
 		mentions = sm.get_all_pos_in_dir(self.project_directory, name)
 		self.show_id_info(record, mentions)
 		

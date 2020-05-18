@@ -4,8 +4,9 @@ from .base_frame import BaseFrame
 
 class LogFrame(BaseFrame):
 	stringvar = None
+	bg_color = "#3c3836"
 	def init_widgets(self):
-		self.text = tk.Text(self, wrap=tk.NONE, font=(None, 7))
+		self.text = tk.Text(self, wrap=tk.NONE, font=(None, 7), bg = self.bg_color, fg="white")
 		yscroll = tk.Scrollbar(self, command=self.text.yview)
 		xscroll = tk.Scrollbar(self, command=self.text.xview, orient="horizontal")
 		self.text["yscrollcommand"] = yscroll.set

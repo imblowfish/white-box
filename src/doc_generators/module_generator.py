@@ -12,7 +12,7 @@ class ModuleGenerator:
 			<title>Modules</title>\
 		</head>\
 		<body>\
-			<div class='module'>%s</div>\
+			<div class='modules'>%s</div>\
 		</body>\
 	<html>"
 	module_template="\

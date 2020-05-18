@@ -168,17 +168,25 @@ class IDTable:
 		return -1
 		
 	def has_record_in_file(self, file, name):
-		record = self.get_record_by_name(name)
+		record = self.get_record_by_name(file)
 		if not record:
 			return False
+		# for id in record.member_id:
+			# print(self.get_record_by_id(id).name)
+		# input()
 		return self.search_child_in_record(record, name)
 	
 	def search_child_in_record(self, record, name):
+		if record.name == name:
+			return True
 		if not record.members_id:
 			return False
 		for id in record.members_id:
 			member = self.get_record_by_id(id)
-			if member.name == name or self.search_child_in_record(member, name):
+			if member.kind == "file":
+				continue
+			res = self.search_child_in_record(member, name)
+			if res:
 				return True
 		return False
 		

@@ -16,7 +16,8 @@ class FileContentFrame(BaseFrame):
 	file_path = None # путь до файла
 	file_name = None
 	selection_pos = "1.0"
-	search_color = "#9ed9ae"
+	search_color = "white"
+	bg_color = "#3c3836"
 	
 	def __init__(self, master, file_name, file_path, command, right_command, x=0, y=0, width=1, height=1):
 		self.file_name = file_name
@@ -37,7 +38,7 @@ class FileContentFrame(BaseFrame):
 			
 	def init_widgets(self):
 		self.font = tkFont.Font(family=None, size=8)
-		self.text = tk.Text(self, wrap=tk.NONE, font=self.font, cursor="arrow")
+		self.text = tk.Text(self, wrap=tk.NONE, font=self.font, cursor="arrow", bg=self.bg_color)
 		
 		y_scroll = tk.Scrollbar(self, command=self.text.yview)
 		x_scroll = tk.Scrollbar(self, orient="horizontal", command=self.text.xview)
@@ -128,6 +129,7 @@ class FileContentFrame(BaseFrame):
 			return "keyword"
 		if type == "id" and id_table:
 			if id_table.has_record_in_file(self.file_name, value):
+				# print(f"Has record {value}")
 				return "id"
 			elif id_table.has_record(value):
 				return "another_file_id"
@@ -182,10 +184,17 @@ class FilesFrame(BaseFrame):
 	frames = None
 	search_text = None
 	now_frame = None
+	font_color = "#f9f5f7"
+	bg_color = "#bda993"
 	def init_widgets(self):
-		self.notebook = ttk.Notebook(self)
+		self["background"] = self.bg_color
+		style = ttk.Style(self)
+		
+		# style.theme_use("clam")
+		style.configure("TNotebook", background=self.bg_color, foreground=self.font_color)
+		self.notebook = ttk.Notebook(self, style="TNotebook")
 		self.search_text = tk.StringVar()
-		self.search_entry = tk.Entry(self, textvariable=self.search_text)
+		self.search_entry = tk.Entry(self, textvariable=self.search_text, bg="#bda993", fg="#3c3836")
 		self.search_entry.place(relx=0, rely=0, relwidth=0.5, relheight=0.03)
 		self.notebook.place(relx=0, rely=0.03, relwidth=1, relheight=0.97)
 		self.notebook.bind("<Button-3>", self.notebook_right_click)
@@ -200,7 +209,7 @@ class FilesFrame(BaseFrame):
 			return
 		res = frame.search(self.search_text.get())
 		if not res:
-			label = tk.Label(self, justify=tk.LEFT, text="No results...", foreground="#c22e21", anchor="nw")
+			label = tk.Label(self, justify=tk.LEFT, text="No results...", bg="#3c3836", foreground="#fb4934", anchor="nw")
 			label.place(relx=0.5, rely=0, relwidth=0.4, relheight=0.03)
 			self.after(1000, label.place_forget)			
 	

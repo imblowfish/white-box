@@ -8,10 +8,11 @@ class SearchIDFrame(BaseFrame):
 	searcher = None
 	run_html = None
 	search_res = None
-	
+	bg_color = "#3c3836"
+	entry_color = "#f9f5f7"
 	def init_widgets(self):
-		self.entry = tk.Entry(self)
-		self.label = tk.Label(self, text="Input ID name and press ENTER:", font=(None, 10))
+		self.entry = tk.Entry(self, bg=self.entry_color, fg="black")
+		self.label = tk.Label(self, text="Input ID name and press ENTER:", font=(None, 10), bg=self.bg_color, fg="white")
 		self.status = StatusBarFrame(self)
 		self.label.place(relx=0, rely=0, relwidth=1, relheight=0.3)
 		self.entry.place(relx=0, rely=0.3, relwidth=1, relheight=0.3)

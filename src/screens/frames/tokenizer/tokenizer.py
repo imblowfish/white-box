@@ -8,7 +8,8 @@ import re
 class Tokenizer:
 	# добавить имя файла
 	token_types = {
-		"id": r"[\_a-zA-Z][\_a-zA-Z0-9]*",
+		"id": r"[\_a-zA-Z][\_a-zA-Z0-9^\.^h]*\.?h?",
+		
 		"comment": r"//?[^\n]*",
 		"multiline comment": r"/\*?[^\*]*",
 		"num": r"(0[1-8]+)|(0x[a-fA-F]+)|(0b[01]+)|0|([1-9]+[0-9]*)",

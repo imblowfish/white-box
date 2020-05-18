@@ -9,10 +9,11 @@ class HTMLGenerator:
 			<title>%s</title>\
 		</head>\
 		<body>\
-			<div class='dep_image'>\
-			<img src='deps.png'>\
 		</div>\
 			<div class='header'>%s</div>\
+			<div class='dep_image'>\
+			<img src='deps.png'>\
+			</div>\
 			<div class='members'>%s</div>\
 			<div class='mentions'>%s</div>\
 		</body>\
@@ -50,12 +51,16 @@ class HTMLGenerator:
 		mention_file = "<div class='mention_file'>%s</div>"
 		mention_text = "<div class='mention_text'><span class='line_num'>%s </span><span class = 'line_content'>%s</span></div>"
 		content = ""
+		mention_content = ""
 		for key in mentions:
 			file_name = mentions[key]["name"]
 			content += mention_file % file_name
 			for mention in mentions[key]["lines"]:
 				content += mention_text%(mention[0], mention[1])
-		return self.mention_info % content
+			mention_content += self.mention_info % content
+			content = ""
+		# return self.mention_info % content
+		return mention_content
 		
 	def record_to_html(self, member):
 		str = ""

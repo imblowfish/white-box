@@ -61,7 +61,7 @@ class MainWindow:
 		
 	def text_in_module_adding(self, text=None):
 		win = tk.Toplevel()
-		win.title("ID searching")
+		win.title("Modules")
 		win.geometry("500x400")
 		module_editor = ModuleEditor(win)
 		module_editor.show(text)
