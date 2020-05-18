@@ -2,4 +2,4 @@
 Система анализа и визуализации исходного текста
 Данная система была разработана в качестве ВКР БГТУ "Военмех".
 Если увидите примеры ужасного кода и плохие решения (а Вы их наверняка увидите):
-![image](https://sagamer.co.za/wp-content/uploads/2015/10/South-Park-Sorry.png=250x100)
+![image](https://sagamer.co.za/wp-content/uploads/2015/10/South-Park-Sorry.png =250x100)
