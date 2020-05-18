@@ -3,7 +3,11 @@ import tkinter.ttk as ttk
 from .base_frame import BaseFrame
 
 class FileInfoFrame(BaseFrame):
+	"""
+		Фрэйм отображения информации о членах файла
+	"""
 	info_tree = None # дерево информации о файле
+	# виды отношений
 	kinds = {
 		"Includes": "file", 
 		"Included by": "file", 
@@ -24,9 +28,6 @@ class FileInfoFrame(BaseFrame):
 	bg_color = "#3c3836"
 		
 	def init_widgets(self):
-		# style = ttk.Style()
-		# style.theme_use("clam")
-		# style.configure("Treeview.Heading", font=(None, 8), align=tk.CENTER, background=self.bg_color, fieldbackground=self.bg_color, foreground=self.font_color)
 		self.info_tree = ttk.Treeview(self, style="Treeview.Heading")
 		self.info_tree.heading("#0", text="File info")
 		

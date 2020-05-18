@@ -4,8 +4,14 @@
 
 import xml.etree.ElementTree as et
 
-# базовый класс для парсеров вывода xml doxygen
+"""
+	Модуль парсеров xml вывода doxygen
+"""
+
 class BaseXMLParser:
+	"""
+		Базовый класс для парсеров вывода xml doxygen
+	"""
 	doxy_table = None #ссылка на таблицу файлов doxygen
 	id_table = None #ссылка на таблицу идентификаторов
 	
@@ -19,7 +25,10 @@ class BaseXMLParser:
 		self.doxy_table = None 
 		self.id_table = None
 
-	def parse(self, file_path): # разбор xml-файла
+	def parse(self, file_path): 
+		"""
+			Разбор xml-файла
+		"""
 		#получаем структуру xml файла
 		try:
 			with open(file_path, "r") as xml_file:
@@ -34,7 +43,10 @@ class BaseXMLParser:
 		return True
 		# print(f"BaseXMLParser: {file_path} success parsing")
 
-	def node_has_attrib(self, node, tags): # проверка, содержит ли узел xml атрибут
+	def node_has_attrib(self, node, tags):
+		"""
+			Проверка, содержит ли узел xml атрибут
+		"""
 		# если параметр список атрибутов
 		if type(tags) is list:
 			# проверяем по каждому
@@ -50,10 +62,15 @@ class BaseXMLParser:
 	def parse_xml_node(self, node): # виртуальная функций разбора узла, перегружается в наследниках
 		pass
 
-# парсер файла index.xml вывода doxygen
 class IndexParser(BaseXMLParser):
+	"""
+		Парсер файла index.xml вывода doxygen
+	"""
 	parser_name = "IndexParser"
-	def parse_xml_node(self, node): # перегруженная функция разбора узла
+	def parse_xml_node(self, node):
+		"""
+			Функция разбора узла
+		"""
 		# просматриваем каждый дочерний элемент узла
 		for child in node:
 			# нужная информация хранится в элементах с тегом compound, иначе пропускаем узел
@@ -75,12 +92,17 @@ class IndexParser(BaseXMLParser):
 			# добавляем запись в таблицу идентификаторов
 			self.id_table.add_record(name, kind)
 
-# парсер файлов xml связанных с исходными файлами проекта
 class SourceFileParser(BaseXMLParser):
+	"""
+		парсер файлов xml связанных с исходными файлами проекта
+	"""
 	parser_name = "SourceFileParser"
 	now_file = None # текущий разбираемый файл
 
-	def parse(self): # перегруженная функция разбора
+	def parse(self):
+		"""
+			Функция разбора
+		"""
 		# получаем список файлов из таблицы doxygen
 		files = self.doxy_table.get_records_by_kind("file")
 		# разбираем каждый файл
@@ -91,6 +113,9 @@ class SourceFileParser(BaseXMLParser):
 		return True
 
 	def parse_xml_node(self, node):
+		"""
+			Разбор узла
+		"""
 		# получаем список включаемых файлов текущего файла
 		includes = node[0].findall("includes")
 		# получаем список членов файла
@@ -109,7 +134,10 @@ class SourceFileParser(BaseXMLParser):
 		# разбираем остальных членов файла
 		self.parse_members(file_id, members)
 
-	def parse_members(self, parent_id, nodes): # разбор членов файла
+	def parse_members(self, parent_id, nodes):
+		"""
+			разбор членов файла
+		"""
 		for node in nodes:
 			# получаем имя и вид
 			name = node[0].find("name").text
@@ -147,8 +175,10 @@ class SourceFileParser(BaseXMLParser):
 					# и добавляем
 					self.id_table.add_member(enum_id, value, "enum_value")
 
-# парсер xml файлов классов проекта
 class ClassParser(BaseXMLParser):
+	"""
+		парсер xml файлов классов проекта
+	"""
 	parser_name = "ClassParser"
 	now_class = None # текущий разбираемый файл класса
 	
@@ -180,7 +210,10 @@ class ClassParser(BaseXMLParser):
 		# разбор членов класса
 		self.parse_members(class_id, members)
 
-	def parse_members(self, parent_id, nodes): # разбор членов класса
+	def parse_members(self, parent_id, nodes):
+		"""
+			разбор членов класса
+		"""
 		# проходим по каждому узлу
 		for node in nodes:
 			# обычно kind членов группирует все члены и выглядит как 'kind-(private/public/protected)',

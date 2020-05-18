@@ -3,6 +3,9 @@ import tkinter.ttk as ttk
 from .base_frame import BaseFrame
 
 class LogFrame(BaseFrame):
+	"""
+		Отображение информации о работе системы
+	"""
 	stringvar = None
 	bg_color = "#3c3836"
 	def init_widgets(self):

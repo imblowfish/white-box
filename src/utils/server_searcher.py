@@ -1,19 +1,24 @@
-# проверка наличия нужного идентификатора
 import requests
 import webbrowser
 import os
 
 class ServerSearcher:
+	"""
+		Класс поиска идентификатора в лок. БД, на сервере, вызова браузера с запросом
+	"""
 	# данные сервера
 	host = "127.0.0.1"
 	port = 8080
-	local_database_path = f"./database"
-	path_for_minibrowser = "../../"
+	local_database_path = f"./database" # путь до локальной БД
+	path_for_minibrowser = "../../" # путь до минибраузера
 	
 	def __init__(self):
 		self.set_host_and_port()
 				
 	def set_host_and_port(self):
+		"""
+			Установка хоста и порта по файлу настроек
+		"""
 		try:
 			file = open("./conf/settings", "r")
 		except:
@@ -27,6 +32,9 @@ class ServerSearcher:
 		file.close()
 		
 	def search_on_server(self, host, port, id_name):
+		"""
+			Поиск на сервере
+		"""
 		if len(id_name) == 0:
 			print("id_name len:0")
 			return None
@@ -41,6 +49,9 @@ class ServerSearcher:
 		return True
 		
 	def search_on_local_database(self, id_name):
+		"""
+			Поиск в локальной БД
+		"""
 		file_name = f"{id_name}.html"
 		print(f"search on {self.local_database_path}")
 		for root, dirs, files in os.walk(self.local_database_path):
@@ -49,8 +60,10 @@ class ServerSearcher:
 					return os.path.join(self.path_for_minibrowser+root, file)
 		return None
 	
-	# поиск в сети интернет
 	def open_in_browser(self, id_name):
+		"""
+			поиск в сети интернет
+		"""
 		try:
 			query = f"https://www.google.com/search?q={id_name}"
 			webbrowser.open(query)
@@ -60,10 +73,16 @@ class ServerSearcher:
 		return True
 		
 	def search_id(self, id_name):
+		"""
+			Поиск идентификатора
+		"""
+		# сперва ищем в лок. БД
 		res = self.search_on_local_database(id_name)
 		if res:
 			return ("local", res)
+		# затем на сервере
 		res = self.search_on_server(self.host, self.port, id_name)
 		if res:
 			return ("global", id_name)
+		# иначе есть возможность получить информацию только через интернет
 		return ("net", id_name)

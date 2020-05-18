@@ -3,6 +3,10 @@ from base_grabber import BaseGrabber
 import codecs
 import xml.etree.ElementTree as et
 
+"""
+	Модуль парсинга cppreference
+"""
+
 class CPPReferenceParser(BaseGrabber):
 	doc_dir = "./grabbers/cppreference"
 	idents_dir = "reference/en"

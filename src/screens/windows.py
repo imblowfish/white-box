@@ -9,8 +9,10 @@ from .frames.status_bar import StatusBarFrame
 from .frames.search_id import SearchIDFrame
 from .frames.module_editor import ModuleEditor
 
-# класс главного окна
 class MainWindow:
+	"""
+		класс главного окна
+	"""
 	master = None # корень tkinter
 	menu_bar = None # меню окна
 	files_frame = None # просмотр файлов
@@ -21,12 +23,18 @@ class MainWindow:
 		self.init_master(800, 600)
 		self.init_frames()
 
-	def init_master(self, width, height): # инициализация корня tkinter
+	def init_master(self, width, height):
+		"""
+			инициализация корня tkinter
+		"""
 		self.master = tk.Tk()
 		self.master.title("WhiteBox")
 		self.master.geometry(str(width)+"x"+str(height))
 
-	def init_frames(self): # инициализация фреймов
+	def init_frames(self):
+		"""
+			инициализация фреймов
+		"""
 		# создаем фрейм иерархии проекта
 		self.hierarchy_frame = HierarchyFrame(self.master, width=0.2, height=0.7)	
 		# фрейм отображения зависимостей файлов между собой
@@ -38,12 +46,16 @@ class MainWindow:
 		self.log_frame = LogFrame(self.master, x=0.8, y=0.7, width=0.2, height=0.27)
 		self.status_bar_frame = StatusBarFrame(self.master, x=0.8, y=0.97, width=0.2, height=0.03)
 
-	def start(self): # начало работы окна
+	def start(self):
 		self.master.mainloop()
 	
 	def log(self, text):
+		"""
+			Добавление информации в лог
+		"""
 		self.log_frame.insert(text)
 		
+	# работа со statusbar
 	def start_statusbar(self):
 		self.status_bar_frame.start()
 		
@@ -51,6 +63,9 @@ class MainWindow:
 		self.status_bar_frame.stop()
 		
 	def search_id(self, s_searcher, run_html):
+		"""
+			Отображение фрейма поиска идентификатора
+		"""
 		win = tk.Toplevel()
 		win.title("ID searching")
 		win.geometry("200x100")
@@ -60,6 +75,9 @@ class MainWindow:
 		s_frame.init_run_html(run_html)
 		
 	def text_in_module_adding(self, text=None):
+		"""
+			Добавление текста в модуль(вызов редактора модулей)
+		"""
 		win = tk.Toplevel()
 		win.title("Modules")
 		win.geometry("500x400")

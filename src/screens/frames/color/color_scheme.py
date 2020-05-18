@@ -11,4 +11,5 @@ file_content_color_scheme = {
 	"float num": "#83a598",
 	"line": "#d5c4a1"
 }
+# цвет при проходе мыши над идентификатором
 file_content_select_bg = "white"

@@ -3,8 +3,10 @@ import tkinter.ttk as ttk
 from .base_frame import BaseFrame
 from .project_tree.project_tree import ProjectTree
 
-# отображение иерархии проекта
 class HierarchyFrame(BaseFrame):
+	"""
+		отображение иерархии проекта
+	"""
 	tree_widget = None # виджет treeview для отображения иерархии
 	font_select_color = "#3c3836"
 	select_color = "#f9f5f7"

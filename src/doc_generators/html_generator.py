@@ -1,7 +1,12 @@
 import codecs
-class HTMLGenerator:
-	output_path = None
 
+"""
+	Генератор html-страницы с информацией об идентификаторе
+"""
+
+class HTMLGenerator:
+	output_path = None # путь для генерации
+	# шаблон документа
 	document="\
 	<!DOCTYPE html>\
 		<head>\
@@ -18,14 +23,18 @@ class HTMLGenerator:
 			<div class='mentions'>%s</div>\
 		</body>\
 	<html>"
-	
+	# шаблон записи члена идентификатора
 	member_info="<div class='member'>%s</div>"
+	# шаблон записей для упоминаний имени идентификатора в других файлах
 	mention_info="<div class='mention'>%s</div>"
 	
 	def __init__(self, gen_path):
 		self.output_path = gen_path
 	
 	def generate_id_info_html(self, record, mentions, id_table):
+		"""
+			Генерация информации об идентификаторе
+		"""
 		title = record.name
 		members_content = ""
 		mentions_content = ""
@@ -38,6 +47,7 @@ class HTMLGenerator:
 			# упоминания
 			mentions_content = self.generate_mentions(mentions)
 		page = self.document % (title, self.record_to_html(record), members_content, mentions_content)
+		# генерируем
 		try:
 			file = open(f"{self.output_path}/output.html", "w")
 		except:
@@ -48,6 +58,9 @@ class HTMLGenerator:
 		return True
 		
 	def generate_mentions(self, mentions):
+		"""
+			Создаем строку с упоминаниями идентификатора в других файлах
+		"""
 		mention_file = "<div class='mention_file'>%s</div>"
 		mention_text = "<div class='mention_text'><span class='line_num'>%s </span><span class = 'line_content'>%s</span></div>"
 		content = ""
@@ -63,6 +76,9 @@ class HTMLGenerator:
 		return mention_content
 		
 	def record_to_html(self, member):
+		"""
+			Перевод записи id-таблицы в html
+		"""
 		str = ""
 		if member.kind:
 			str += f"<span class='kind'>{member.kind} </span>"

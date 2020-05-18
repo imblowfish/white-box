@@ -5,7 +5,14 @@ import math
 from PIL import Image, ImageTk
 from .base_frame import BaseFrame
 
+"""
+	Модуль визуализации зависимостей между файлами проекта
+"""
+
 class FileDependenciesFrame(BaseFrame):
+	"""
+		Класс визуализации зависимостей между файлами проекта
+	"""
 	prev_x = None
 	prev_y = None
 	radius = 2
@@ -19,10 +26,7 @@ class FileDependenciesFrame(BaseFrame):
 	def init_widgets(self):
 		self.bind("<Configure>", self.resize)
 		self.canvas = tk.Canvas(self, bg=self.bg_color)
-		# image = Image.open(self.zoom_icon_path)
-		# icon = ImageTk.PhotoImage(image)
 		self.zoom_btn = tk.Button(self, text="Maximize", width = 12, bg="#bda993", fg="#3c3836")
-		# self.zoom_btn.image = icon
 		self.canvas.place(relx=0, rely=0, relwidth=1, relheight=1)
 		self.zoom_btn.pack(fill=tk.X, side=tk.TOP)
 		self.canvas.pack(fill=tk.BOTH)
@@ -69,6 +73,7 @@ class FileDependenciesFrame(BaseFrame):
 		for record in records:
 			if record.kind == "file":
 				files.append(record.name)
+		# отображаем все записи по кругу для наглядности и чтобы сократить кол-во непонятных пересечений
 		num_of_files = len(files)
 		alpha = (2 * math.pi)/num_of_files
 		dt = 3 * math.pi / 2

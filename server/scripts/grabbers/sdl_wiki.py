@@ -1,6 +1,10 @@
 from bs4 import BeautifulSoup
 from base_grabber import BaseGrabber
 
+"""
+	Модуль парсинга SDLWiki
+"""
+
 class SDLWikiParser(BaseGrabber):
 	begin_url = "https://wiki.libsdl.org"
 	search_url = "https://wiki.libsdl.org/CategoryAPI"

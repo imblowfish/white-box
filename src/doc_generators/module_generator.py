@@ -3,8 +3,14 @@ from tkinter import filedialog
 from tkinter import messagebox
 import shutil
 
+"""
+	Генератор HTML-страницы модуля
+"""
+
 class ModuleGenerator:
+	# путь до css файла
 	stylepath="./conf/modulestyle.css"
+	# шаблон документа
 	document="\
 	<!DOCTYPE html>\
 		<head>\
@@ -15,17 +21,22 @@ class ModuleGenerator:
 			<div class='modules'>%s</div>\
 		</body>\
 	<html>"
+	# шаблон модуля
 	module_template="\
 	<div class='module_name'>%s</div>\
 	<div class='description'>%s</div>\
 	<div class='blocks'>%s</div>\
 	"
+	# шаблон текстового блока модуля
 	block_template="\
 	<div class='block_name'>%s</div>\
 	<div class='block_content'>%s</div>\
 	"
 	
 	def generate(self, modules):
+		"""
+			Генерация html-файла модулей
+		"""
 		# выбираем путь, куда экспортировать
 		export_dir =  tk.filedialog.askdirectory()
 		if not export_dir:

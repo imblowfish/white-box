@@ -7,6 +7,10 @@ import json
 from .base_frame import BaseFrame
 from doc_generators.module_generator import ModuleGenerator
 
+"""
+	Модуль редактирования группированного текста проекта
+"""
+
 class ModuleTextFrame(BaseFrame):
 	text = None
 	font_color = "#f9f5f7"
@@ -17,6 +21,9 @@ class ModuleTextFrame(BaseFrame):
 
 
 class ModuleEditor(BaseFrame):
+	"""
+		Редактор модулей
+	"""
 	saved = True
 	modules = None
 	module_file_path = "./temp/module.json"
@@ -234,8 +241,6 @@ class ModuleEditor(BaseFrame):
 		if text:
 			self.module_text_frame.text.insert(tk.END, text)
 		# поиск временного файла модулей проекта
-		# if os.path.exists(self.module_file_path):
-			# os.remove(self.module_file_path)
 		if not os.path.exists(self.module_file_path):
 			with open(self.module_file_path, "w") as file:
 				pass

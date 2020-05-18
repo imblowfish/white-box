@@ -9,6 +9,7 @@ from .doxygen_parser import (
 	ClassParser
 )
 
+# получение пути до doxygen из файла настроек
 def get_doxygen_path():
 	try:
 		file = open("./conf/settings", "r")

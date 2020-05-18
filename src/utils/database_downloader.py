@@ -2,6 +2,10 @@ import requests
 import os
 from .zip_worker import ZipWorker
 
+"""
+	Модуль загрузки архивированной базы данных с сервера
+"""
+
 class DatabaseDownloader:
 	# host = "127.0.0.1"
 	# port = 8080
@@ -13,6 +17,9 @@ class DatabaseDownloader:
 		self.set_host_and_port()
 		
 	def set_host_and_port(self):
+		"""
+			Установка хоста и порта по значениям в файле настроек
+		"""
 		try:
 			file = open("./conf/settings", "r")
 		except:
@@ -27,6 +34,9 @@ class DatabaseDownloader:
 		file.close()
 	
 	def download(self, unzip=False):
+		"""
+			Загрузка базы данных
+		"""
 		path = f"{self.output_dir}/{self.database_name}"
 		try:
 			req = requests.get(self.url, stream=True)
@@ -47,21 +57,3 @@ class DatabaseDownloader:
 			zw.unzip(path, self.output_dir)
 			os.remove(path)
 		return (True, req.status_code)
-		# try:
-			# path = f"{self.output_dir}/{self.database_name}"
-			# req = requests.get(self.url)
-		# except:
-			# return (False, "Connetion error")
-		# if req.status_code != 200:
-			# print(f"Can't load database {self.url}")
-			# return (False, req.status_code)
-		# if not os.path.exists(self.output_dir):
-			# os.mkdir(self.output_dir)
-		# file = open(path, "wb")
-		# file.write(req.content)
-		# file.close()
-		# if unzip:
-			# zw = ZipWorker()
-			# zw.unzip(path, self.output_dir)
-			# os.remove(path)
-		# return (True, req.status_code)

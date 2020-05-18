@@ -1,9 +1,15 @@
 import codecs
 import re
 from . import directory_parser as dp
-# import unicode
+
+"""
+	Модуль поиска упоминаний идентификатора в файлах проекта
+"""
 
 def get_all_pos_in_file(file_path, str):
+	"""
+		Поиск упоминаний в файле
+	"""
 	try:
 		file = codecs.open(file_path, "r")
 	except:
@@ -23,16 +29,22 @@ def get_all_pos_in_file(file_path, str):
 	return lines
 	
 def get_all_pos_in_dir(dir_path, str):
+	"""
+		Поиск упоминаний в директории
+	"""
+	# получаем дерево директории
 	tree = dp.dir_tree(dir_path)
 	if not tree:
 		return
 	pos = {}
+	# получаю список файлов в директориии и путь до них
 	for node in tree:
 		for file in node[2]:
 			pos[f"{node[0]}\\{file}"] = {
 				"name": file
 			}
 	delete_keys = []
+	# ищу упоминания строки в каждом файле
 	for key in pos.keys():
 		res = get_all_pos_in_file(key, str)
 		pos[key]["lines"] = res

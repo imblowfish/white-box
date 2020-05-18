@@ -9,14 +9,19 @@ from doc_generators.id_info_generator import IDInfoGenerator
 from utils.server_searcher import ServerSearcher
 from utils.database_downloader import DatabaseDownloader
 from screens.frames.file_dependencies import FileDependenciesFrame
-	
-# список команд, наследуемых WhiteBoxCore
+
 class WhiteBoxCommands:
+	"""
+		список команд, наследуемых WhiteBoxCore
+	"""
 	out_doc_path = "./temp/docs" # куда генерировать документацию doxygen
 	html_viewer_path = "./utils/minibrowser/"
 	default_id_info_path = "../../temp/html/output.html"
 	
 	def get_id_table(self):
+		"""
+			Получение таблицы идентификаторов из вывода doxygen
+		"""
 		self.main_win.log("Generate documentation...")
 		# генерируем документацию проекта
 		doc_path = doxy.generate_doc(self.project_directory, self.out_doc_path)
@@ -40,7 +45,10 @@ class WhiteBoxCommands:
 			return False
 		return True
 
-	def show_hierarchy(self): # отображение иерархии проекта
+	def show_hierarchy(self):
+		"""
+			отображение иерархии проекта
+		"""
 		# получаем дерево директории
 		self.main_win.log("Parse directory tree")
 		tree = dir_par.dir_tree(self.project_directory)
@@ -52,10 +60,15 @@ class WhiteBoxCommands:
 		self.main_win.file_dependency_frame.show(self.id_table.get_records(), self.id_table)
 		
 	def show_file(self, name, path, record):
+		"""
+			Отображени содержимого файла
+		"""
 		self.main_win.log(f"Determine path to the file {name}...")
+		# если нет пути до файла, значит файл не принадлежит проекта, ищем в других местах
 		if not path:
 			self.search_id(name)
 			return
+		# иначе отображаем
 		self.main_win.log(f"Render file {name}")
 		self.main_win.files_frame.open_file(
 			name, 
@@ -69,29 +82,40 @@ class WhiteBoxCommands:
 			self.main_win.file_info_frame.show(record, self.id_table)
 		
 	def search_id(self, name):
+		"""
+			Поиск идентификатора
+		"""
 		self.main_win.log(f"Search {name} on local database and server...")
 		# пытаемся найти на серверах
 		s_search = ServerSearcher()
 		res = s_search.search_id(name)
+		# если в результате поиска нашли на сервере
 		if res[0] != "net":
 			self.main_win.log(f"Found success")
 			self.main_win.log(f"Run html viewer...")
 			self.run_html_viewer(res[0], res[1])
 		else:
+			# иначе спрашиваем, будет ли пользователь искать в интернете?
 			self.main_win.log(f"Found failed")
 			res = messagebox.askyesno(
 				"Search on net", 
 				f"Can't find '{name}' on local storage and on server, try to search on internet?"
 			)
+			# если да, открываем браузер
 			if res:
 				self.main_win.log(f"Run browser...")
 				s_search.open_in_browser(name)
 
 	def show_id_info(self, record, mentions):
+		"""
+			Отображение информации об идентификаторе
+		"""
+		# генерируем html-документ
 		id_info_generator = IDInfoGenerator()
 		self.main_win.log(f"Generate html for {record.name}...")
 		id_info_generator.generate(record, self.id_table, mentions)
 		self.main_win.log(f"Run html viewer...")
+		# отображаем
 		self.run_html_viewer()
 		
 	def remove_spaces(self, str):
@@ -103,6 +127,9 @@ class WhiteBoxCommands:
 
 	# UTILITY COMMANDS
 	def run_html_viewer(self, where_to_look="local", path=default_id_info_path):
+		"""
+			Запуск визуализатора html в дочернем процессе
+		"""
 		self.main_win.start_statusbar()
 		try:
 			subprocess.Popen(["npm", "run", "start", "--prefix", self.html_viewer_path, where_to_look, path], shell=True)
@@ -115,9 +142,13 @@ class WhiteBoxCommands:
 		self.main_win.stop_statusbar()
 		
 	def download_database(self):
+		"""
+			Загрузка БД с сервера
+		"""
 		self.main_win.start_statusbar()
 		self.main_win.log(f"Try to download database from server...")
 		dd = DatabaseDownloader()
+		# после скачивания будем сразу разархивировать, поэтому unzip True
 		res = dd.download(unzip=True)
 		self.main_win.stop_statusbar()
 		if not res[0]:
@@ -128,7 +159,10 @@ class WhiteBoxCommands:
 			messagebox.showinfo("Download result", "Success")
 	
 	# CLICK COMMANDS
-	def open_project_click(self, event): # открытие проекта
+	def open_project_click(self, event):
+		"""
+			открытие проекта
+		"""
 		# запоминаем предыдущую директорию проекта
 		prev_dir = self.project_directory
 		# узнаем новую директорию проекта
@@ -148,6 +182,9 @@ class WhiteBoxCommands:
 		self.main_win.stop_statusbar()
 		
 	def open_file_click(self, event):
+		"""
+			Клик по пункту меню открыть файл
+		"""
 		# узнаем у пользователя, какой файл открыть
 		file_path = dir_par.relative_path_to( tk.filedialog.askopenfilename() )
 		if not file_path:
@@ -158,6 +195,9 @@ class WhiteBoxCommands:
 		self.show_file(file_path, file_path, None)
 	
 	def maximize_file_dependencies(self, event):
+		"""
+			Увеличение визуализации зависимостей файлов проекта
+		"""
 		if not self.id_table:
 			return
 		win = tk.Toplevel(self.main_win.master)
@@ -167,7 +207,10 @@ class WhiteBoxCommands:
 		frame.zoom_btn.pack_forget()
 		frame.show(self.id_table.get_records(), self.id_table)
 	
-	def hierarchy_click(self, event): # обработка клика по иерархии
+	def hierarchy_click(self, event):
+		"""
+			обработка клика по иерархии
+		"""
 		# идентифицируем элемент, по которому кликнули
 		name = self.main_win.hierarchy_frame.get_name(event)
 		if not len(name):
@@ -192,8 +235,10 @@ class WhiteBoxCommands:
 		fif = self.main_win.file_info_frame
 		fif.show(record, self.id_table)
 		
-	def file_content_click(self, event, text_tag): # обработка клика по тексту файла
-		# вывод информации об идентификаторе
+	def file_content_click(self, event, text_tag):
+		"""
+			обработка клика по тексту файла
+		"""
 		name = self.remove_spaces( self.main_win.files_frame.get_current().get_word_under(event, text_tag) )
 		if not len(name):
 			return
@@ -221,7 +266,9 @@ class WhiteBoxCommands:
 		self.show_id_info(record, mentions)
 		
 	def file_info_click(self, event):
-		# отображение окна с информацией об идентификаторе
+		"""
+			отображение окна с информацией об идентификаторе
+		"""
 		name, kind = self.main_win.file_info_frame.get_item_info(event.x, event.y)
 		name = self.remove_spaces(name)
 		if not name:
@@ -238,6 +285,9 @@ class WhiteBoxCommands:
 		self.show_id_info(record, mentions)
 		
 	def file_content_right_click(self, event):
+		"""
+			Отображение popup меню при правом клике по содержимому файла
+		"""
 		popup = tk.Menu(self.main_win.master, tearoff=0)
 		text = self.main_win.files_frame.get_selected_text()
 		if text:
@@ -246,6 +296,9 @@ class WhiteBoxCommands:
 		popup.tk_popup(event.x_root, event.y_root, 0)
 	
 	def add_to_module(self, text):
+		"""
+			Добавление блока текста в модуль
+		"""
 		self.main_win.text_in_module_adding(text)
 	
 		

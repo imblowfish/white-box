@@ -5,6 +5,9 @@ from .base_frame import BaseFrame
 from .status_bar import StatusBarFrame
 
 class SearchIDFrame(BaseFrame):
+	"""
+		Фрэйм поиска идентификатора
+	"""
 	searcher = None
 	run_html = None
 	search_res = None
